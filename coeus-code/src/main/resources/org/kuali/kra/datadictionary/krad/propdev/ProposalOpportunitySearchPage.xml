@@ -105,7 +105,11 @@
 				<bean parent="Uif-InputField" p:propertyName="s2sSubmissionTypeCode"
 					p:fieldLabel.renderColon="false" />
 				<bean parent="Uif-InputField" p:propertyName="revisionCode"
-					p:fieldLabel.renderColon="false" />
+					p:label="Revision Type" p:fieldLabel.renderColon="false" />
+				<bean parent="Uif-InputField" p:propertyName="developmentProposal.prevGrantsGovTrackingID"
+					p:fieldLabel.renderColon="false" />	
+				<bean parent="Uif-InputField" p:propertyName="developmentProposal.agencyRoutingIdentifier"
+					p:fieldLabel.renderColon="false" />	
 				<bean parent="Uif-DataField" p:propertyName="cfdaNumber"
 					p:fieldLabel.renderColon="false" />
 				<bean parent="Uif-DataField" p:propertyName="competetionId"
@@ -116,12 +120,12 @@
 					p:fieldLabel.renderColon="false" />
 				<bean parent="Uif-LinkField" p:fieldLabel.labelText="Instruction Page"
 					p:href="@{document.developmentProposal.s2sOpportunity?.instructionUrl}"
-					p:linkText="Download Instructions" />
+					p:linkText="Download Instructions" p:target="_blank"/>
 				<bean parent="Uif-LinkField" p:fieldLabel.labelText="Schema URL"
 					p:href="@{document.developmentProposal.s2sOpportunity?.schemaUrl}"
-					p:linkText="View schema" />
+					p:linkText="View schema" p:target="_blank"/>
 				<bean parent="Uif-DataField" p:propertyName="s2sProvider.description"
-					p:fieldLabel.renderColon="false" />
+					p:label="S2S Provider" p:fieldLabel.renderColon="false" />
 			</list>
 		</property>
 	</bean>
