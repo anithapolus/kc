@@ -38,15 +38,29 @@
       <bean parent="AlphaNumericPatternConstraint"/>
     </property>
     <property name="required" value="false" />
-    <property name="control" >
+   <!--  <property name="control" >
       <bean parent="TextControlDefinition" p:size="4"/>
-    </property>
-    <property name="controlField">
+    </property> -->
+   <!--  <property name="controlField">
       <bean p:size="4" parent="Uif-TextControl"/>
-    </property>
+    </property> -->
     <property name="summary" value="Submission Type" />
     <property name="description" value="Submission Type" />
-  </bean>
+ <property name="controlField">
+                        <bean parent="Uif-DropdownControl"/>
+                </property> 
+      <!-- <property name="control">
+                        <bean parent="SelectControlDefinition" p:businessObjectClass="org.kuali.coeus.propdev.impl.s2s.S2sSubmissionType" p:valuesFinderClass="org.kuali.coeus.sys.framework.keyvalue.ExtendedPersistableBusinessObjectValuesFinder" p:includeKeyInLabel="false" p:keyAttribute="s2sSubmissionTypeCode" p:labelAttribute="description"   p:includeBlankRow="true"  />
+                </property> -->
+                <property name="optionsFinder">
+                        <bean class="org.kuali.coeus.sys.framework.keyvalue.ExtendedPersistableBusinessObjectValuesFinder">
+                                <property name="businessObjectClass" value="org.kuali.coeus.propdev.impl.s2s.S2sSubmissionType"/>
+                                <property name="includeKeyInDescription" value="false"/>
+                                <property name="keyAttributeName" value="s2sSubmissionTypeCode"/>
+                                <property name="labelAttributeName" value="description"/>
+                        </bean>
+                </property>       
+    </bean>
 
   <bean id="S2sSubmissionType-description" parent="S2sSubmissionType-description-parentBean"/>
   <bean id="S2sSubmissionType-description-parentBean" abstract="true" parent="KraAttributeReferenceDummy-description"/>
@@ -96,7 +110,7 @@
   <bean id="S2sSubmissionType-lookupDefinition" parent="S2sSubmissionType-lookupDefinition-parentBean" />
   <bean id="S2sSubmissionType-LookupView" parent="S2sSubmissionType-LookupView-parentBean"/>
   <bean id="S2sSubmissionType-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
-    <property name="title" value="Submission Type Lookup" />
+    <property name="title" value="Submission Type Lookup1" />
     <property name="menubar" value="&lt;a href=&quot;index.jsp&quot;&gt;Main&lt;/a&gt;" />
     <property name="defaultSort" >
       <bean parent="SortDefinition"/>
@@ -120,7 +134,7 @@
 
   <bean id="S2sSubmissionType-LookupView-parentBean" abstract="true" parent="Uif-LookupView">
     <property name="dataObjectClassName" value="org.kuali.coeus.propdev.impl.s2s.S2sSubmissionType"/>
-    <property name="headerText" value="Submission Type Lookup"/>
+    <property name="headerText" value="Submission Type Lookup1"/>
     <property name="page.header.lowerGroup">
       <bean parent="Uif-HeaderLowerGroup">
         <property name="items">

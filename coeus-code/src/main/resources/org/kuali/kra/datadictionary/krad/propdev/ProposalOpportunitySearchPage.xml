@@ -103,9 +103,11 @@
 				<bean parent="Uif-DataField" p:propertyName="opportunityTitle"
 					p:fieldLabel.renderColon="false" />
 				<bean parent="Uif-InputField" p:propertyName="s2sSubmissionTypeCode"
-					p:fieldLabel.renderColon="false" />
+					p:defaultValue="Application" 
+					p:enableAutoQuickfinder="false"/>
 				<bean parent="Uif-InputField" p:propertyName="revisionCode"
-					p:label="Revision Type" p:fieldLabel.renderColon="false" />
+					p:label="Revision Type"
+					p:enableAutoQuickfinder="false" />
 				<bean parent="Uif-InputField" p:propertyName="developmentProposal.prevGrantsGovTrackingID"
 					p:fieldLabel.renderColon="false" />	
 				<bean parent="Uif-InputField" p:propertyName="developmentProposal.agencyRoutingIdentifier"
@@ -129,6 +131,17 @@
 			</list>
 		</property>
 	</bean>
+	
+	<!-- <bean id="PropDev-OpportunityPage-OwnedByUnitNumberField" parent="PropDev-OpportunityPage-OwnedByUnitNumberField-parentBean" />
+	<bean id="PropDev-OpportunityPage-OwnedByUnitNumberField-parentBean"
+		abstract="true" parent="Uif-InputField" p:propertyName="ownedByUnitNumber" >
+		<property name="control">
+			<bean parent="Uif-DropdownControl"/>
+		</property>
+		<property name="optionsFinder">
+			<bean class="org.kuali.kra.proposaldevelopment.lookup.keyvalue.LeadUnitValuesFinder" p:addBlankOption="false"/>
+		</property>
+        </bean> -->
 
 	<bean id="PropDev-OpportunityPage-Forms" parent="PropDev-OpportunityPage-Forms-parentBean" />
 	<bean id="PropDev-OpportunityPage-Forms-parentBean" abstract="true"
