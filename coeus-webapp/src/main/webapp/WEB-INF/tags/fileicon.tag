@@ -15,9 +15,10 @@
 --%>
 <%@ include file="/WEB-INF/jsp/kraTldHeader.jsp"%>
 
-<%@ attribute name="attachment" required="true" type="org.kuali.coeus.common.framework.attachment.KcAttachment"%>
+<%@ attribute name="attachment" required="true" type="org.kuali.coeus.common.api.attachment.KcAttachment"%>
 
 <c:set var="height" value="16"/>
 <c:set var="width" value="16"/>
 
-<img src="${attachment.iconPath}" height="${height}" width="${width}" alt="${attachment.type}" title="${attachment.type}"/>
+<img src="${krafn:getIconPath(attachment.type)}" height="${height}" width="${width}" alt="${attachment.type}" title="${attachment.type}"/>
+>>>>>>> KCINFR-979: establishing a service api for propdev budget subaward, promoting KcAttachment,  making attachment data structures not have to understand the location of a file icon.

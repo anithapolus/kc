@@ -1,14 +1,14 @@
 package org.kuali.kra.s2s.depend;
 
-import org.kuali.kra.proposaldevelopment.bo.Narrative;
+import org.kuali.coeus.propdev.impl.attachment.Narrative;
 import org.kuali.rice.krad.data.DataObjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Component("narrativeCleanupService")
+@Service("narrativeCleanupService")
 public class NarrativeCleanupServiceImpl implements NarrativeCleanupService {
 
     public static final int ADDITIONAL_KEYPERSONS_ATTACHMENT = 11;

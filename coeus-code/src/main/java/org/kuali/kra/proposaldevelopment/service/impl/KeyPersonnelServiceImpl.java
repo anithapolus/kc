@@ -19,24 +19,29 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kuali.coeus.common.api.sponsor.hierarchy.SponsorHierarchyService;
 import org.kuali.coeus.common.framework.editable.PersonEditableService;
 import org.kuali.coeus.common.framework.person.KcPerson;
 import org.kuali.coeus.common.framework.person.attr.PersonBiosketch;
 import org.kuali.coeus.common.framework.person.attr.PersonDegree;
 import org.kuali.coeus.common.framework.sponsor.Sponsor;
-import org.kuali.coeus.common.framework.sponsor.SponsorService;
+import org.kuali.coeus.common.framework.type.InvestigatorCreditType;
 import org.kuali.coeus.common.framework.unit.Unit;
+import org.kuali.coeus.common.framework.ynq.Ynq;
+import org.kuali.coeus.common.framework.ynq.YnqService;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentDocument;
 import org.kuali.coeus.propdev.impl.person.*;
+import org.kuali.coeus.propdev.impl.person.attachment.ProposalPersonBiography;
+import org.kuali.coeus.propdev.impl.person.attachment.ProposalPersonBiographyAttachment;
+import org.kuali.coeus.propdev.impl.person.creditsplit.CreditSplit;
+import org.kuali.coeus.propdev.impl.person.creditsplit.ProposalPersonCreditSplit;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.award.home.ContactRole;
-import org.kuali.kra.bo.*;
 import org.kuali.kra.budget.personnel.PersonRolodex;
 import org.kuali.kra.infrastructure.Constants;
 import org.kuali.kra.proposaldevelopment.bo.*;
 import org.kuali.kra.proposaldevelopment.service.KeyPersonnelService;
 import org.kuali.kra.proposaldevelopment.service.NarrativeService;
-import org.kuali.kra.service.YnqService;
 import org.kuali.coeus.sys.api.model.ScaleTwoDecimal;
 import org.kuali.rice.coreservice.framework.parameter.ParameterService;
 import org.kuali.rice.kew.api.WorkflowDocument;
@@ -67,7 +72,7 @@ public class KeyPersonnelServiceImpl implements KeyPersonnelService, Constants {
     private NarrativeService narrativeService;
     private YnqService ynqService;
     private ParameterService parameterService;
-    private SponsorService sponsorService;
+    private SponsorHierarchyService sponsorHierarchyService;
     
     @Autowired
     @Qualifier("personEditableService")
@@ -272,7 +277,7 @@ public class KeyPersonnelServiceImpl implements KeyPersonnelService, Constants {
                 }
                 if (origPerson.getExtendedAttributes().getAttachments() != null) {
                     for (PersonBiosketch attachment : origPerson.getExtendedAttributes().getAttachments()) {
-                        ProposalPersonBiography bio = new ProposalPersonBiography(); 
+                        ProposalPersonBiography bio = new ProposalPersonBiography();
                         bio.setProposalPersonNumber(person.getProposalPersonNumber());
                         bio.setDocumentTypeCode(getDefaultPersonAttachmentDocType());
                         bio.setDescription(attachment.getDescription());
@@ -633,7 +638,7 @@ public class KeyPersonnelServiceImpl implements KeyPersonnelService, Constants {
     }
     
     public boolean isSponsorNihMultiplePi(ProposalDevelopmentDocument document){
-        return getSponsorService().isSponsorNihMultiplePi(document.getDevelopmentProposal());
+        return getSponsorHierarchyService().isSponsorNihMultiplePi(document.getDevelopmentProposal().getSponsorCode());
     }
 
     /**
@@ -649,8 +654,8 @@ public class KeyPersonnelServiceImpl implements KeyPersonnelService, Constants {
         return roleDescriptions;
     }
 
-    protected SponsorService getSponsorService() {
-        return sponsorService;
+    protected SponsorHierarchyService getSponsorHierarchyService() {
+        return sponsorHierarchyService;
     }
 
     protected String findRoleDescription(ContactRole role, boolean sponsorIsNih) {
@@ -672,7 +677,7 @@ public class KeyPersonnelServiceImpl implements KeyPersonnelService, Constants {
     }
     
     public String getPersonnelRoleDesc(PersonRolodex person) {
-        if (getSponsorService().isSponsorNihMultiplePi(person.getParent())) {
+        if (getSponsorHierarchyService().isSponsorNihMultiplePi(person.getParent().getSponsorCode())) {
             String parmName = createRoleDescriptionParameterName(person.getContactRole(), NIH_PARM_KEY);
             if (StringUtils.equals(person.getContactRole().getRoleCode(), ContactRole.COI_CODE)
                     && person.isMultiplePi()) {
@@ -684,8 +689,8 @@ public class KeyPersonnelServiceImpl implements KeyPersonnelService, Constants {
         }
     }
     
-    public void setSponsorService(SponsorService sponsorService) {
-        this.sponsorService = sponsorService;
+    public void setSponsorHierarchyService(SponsorHierarchyService sponsorHierarchyService) {
+        this.sponsorHierarchyService = sponsorHierarchyService;
     }
 	protected PersonEditableService getPersonEditableService() {
 		return personEditableService;

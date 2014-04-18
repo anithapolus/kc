@@ -19,12 +19,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts.upload.FormFile;
+import org.kuali.coeus.propdev.impl.attachment.Narrative;
+import org.kuali.coeus.propdev.impl.attachment.NarrativeAttachment;
+import org.kuali.coeus.propdev.impl.attachment.NarrativeStatus;
+import org.kuali.coeus.propdev.impl.budget.ProposalBudgetStatus;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentDocument;
 import org.kuali.coeus.propdev.impl.keyword.PropScienceKeyword;
 import org.kuali.coeus.propdev.impl.location.CongressionalDistrict;
 import org.kuali.coeus.propdev.impl.location.ProposalSite;
 import org.kuali.coeus.propdev.impl.person.ProposalPerson;
 import org.kuali.coeus.propdev.impl.person.ProposalPersonUnit;
+import org.kuali.coeus.propdev.impl.person.attachment.ProposalPersonBiography;
+import org.kuali.coeus.propdev.impl.person.attachment.ProposalPersonBiographyAttachment;
 import org.kuali.coeus.sys.framework.auth.perm.KcAuthorizationService;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.coeus.sys.framework.workflow.KcDocumentRejectionService;
@@ -61,7 +67,7 @@ import org.kuali.coeus.propdev.impl.hierarchy.HierarchyProposalSummary;
 import org.kuali.coeus.propdev.impl.hierarchy.ProposalHierarchyDao;
 import org.kuali.kra.proposaldevelopment.hierarchy.service.ProposalHierarchyService;
 import org.kuali.kra.proposaldevelopment.service.NarrativeService;
-import org.kuali.kra.proposaldevelopment.service.ProposalPersonBiographyService;
+import org.kuali.coeus.propdev.impl.person.attachment.ProposalPersonBiographyService;
 import org.kuali.kra.proposaldevelopment.specialreview.ProposalSpecialReview;
 import org.kuali.rice.core.api.config.property.ConfigurationService;
 import org.kuali.rice.coreservice.framework.parameter.ParameterService;
@@ -707,7 +713,6 @@ public class ProposalHierarchyServiceImpl implements ProposalHierarchyService {
                 newPerson = (BudgetPerson) ObjectUtils.deepCopy(person);
                 newPerson.setPersonSequenceNumber(parentBudget.getBudgetDocument().getHackedDocumentNextValue(
                         Constants.PERSON_SEQUENCE_NUMBER));
-//                newPerson.setBudget(parentBudget);
                 newPerson.setBudgetId(parentBudget.getBudgetId());
                 newPerson.setHierarchyProposalNumber(childProposalNumber);
                 newPerson.setVersionNumber(null);
@@ -721,21 +726,18 @@ public class ProposalHierarchyServiceImpl implements ProposalHierarchyService {
                 childSubAwards.refreshReferenceObject("budgetSubAwardFiles");
                 newSubAwards = (BudgetSubAwards) ObjectUtils.deepCopy(childSubAwards);
                 newSubAwards.setBudgetId(parentBudget.getBudgetId());
-//                newSubAwards.setBudget(parentBudget);
                 newSubAwards.setBudgetVersionNumber(parentBudget.getBudgetVersionNumber());
                 newSubAwards.setSubAwardNumber(parentBudget.getBudgetDocument().getHackedDocumentNextValue("subAwardNumber") != null ? parentBudget.getBudgetDocument().getHackedDocumentNextValue("subAwardNumber") : 1);
                 newSubAwards.setVersionNumber(null);
                 newSubAwards.setHierarchyProposalNumber(childProposalNumber);
                 for (BudgetSubAwardAttachment attachment : newSubAwards.getBudgetSubAwardAttachments()) {
                     attachment.setSubAwardNumber(newSubAwards.getSubAwardNumber());
-//                    attachment.setBudget(parentBudget);
                     attachment.setBudgetId(parentBudget.getBudgetId());
-                    attachment.setBudgetSubawardAttachmentId(null);
+                    attachment.setId(null);
                     attachment.setVersionNumber(null);
                 }
                 for (BudgetSubAwardFiles files : newSubAwards.getBudgetSubAwardFiles()) {
                     files.setSubAwardNumber(newSubAwards.getSubAwardNumber());
-//                    files.setBudget(parentBudget);
                     files.setBudgetId(parentBudget.getBudgetId());
                     files.setVersionNumber(null);
                 }

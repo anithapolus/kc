@@ -17,6 +17,10 @@ package org.kuali.kra.proposaldevelopment.rules;
 
 import org.apache.commons.lang3.StringUtils;
 import org.kuali.coeus.common.framework.audit.KcDocumentBaseAuditRule;
+import org.kuali.coeus.propdev.impl.abstrct.ProposalDevelopmentAbstractsRule;
+import org.kuali.coeus.propdev.impl.attachment.*;
+import org.kuali.coeus.propdev.impl.attachment.institute.AddInstituteAttachmentEvent;
+import org.kuali.coeus.propdev.impl.attachment.institute.AddInstituteAttachmentRule;
 import org.kuali.coeus.propdev.impl.abstrct.AbstractsRule;
 import org.kuali.coeus.propdev.impl.abstrct.ProposalAbstract;
 import org.kuali.coeus.propdev.impl.copy.CopyProposalRule;
@@ -32,6 +36,13 @@ import org.kuali.coeus.propdev.impl.editable.ProposalDevelopmentDataOverrideRule
 import org.kuali.coeus.propdev.impl.keyword.PropScienceKeyword;
 import org.kuali.coeus.propdev.impl.location.*;
 import org.kuali.coeus.propdev.impl.person.ProposalPerson;
+import org.kuali.coeus.propdev.impl.person.attachment.AddPersonnelAttachmentEvent;
+import org.kuali.coeus.propdev.impl.person.attachment.AddPersonnelAttachmentRule;
+import org.kuali.coeus.propdev.impl.person.attachment.SavePersonnelAttachmentEvent;
+import org.kuali.coeus.propdev.impl.person.creditsplit.CalculateCreditSplitRule;
+import org.kuali.coeus.propdev.impl.person.keyperson.AddKeyPersonRule;
+import org.kuali.coeus.propdev.impl.person.keyperson.ChangeKeyPersonRule;
+import org.kuali.coeus.propdev.impl.person.keyperson.SaveKeyPersonRule;
 import org.kuali.coeus.propdev.impl.resubmit.ResubmissionPromptRule;
 import org.kuali.coeus.propdev.impl.resubmit.ResubmissionRuleEvent;
 import org.kuali.coeus.propdev.impl.ynq.ProposalDevelopmentYnqAuditRule;
@@ -476,7 +487,7 @@ public class ProposalDevelopmentDocumentRule extends BudgetParentDocumentRule im
     }
     
     /**
-     * Delegating method for the <code>{@link ChangeKeyPersonRule}</code> which is triggered by the <code>{@link ChangeKeyPersonEvent}</code>
+     * Delegating method for the <code>{@link ChangeKeyPersonRule}</code> which is triggered by the <code>{@link org.kuali.coeus.propdev.impl.person.keyperson.ChangeKeyPersonEvent}</code>
      * 
      */
     public boolean processChangeKeyPersonBusinessRules(ProposalPerson proposalPerson, BusinessObject source,int index) {
@@ -511,7 +522,7 @@ public class ProposalDevelopmentDocumentRule extends BudgetParentDocumentRule im
     /**
      * Delegate to {@link org.kuali.kra.proposaldevelopment.rules.ProposalDevelopmentKeyPersonsRule#processSaveKeyPersonBusinessRules(ProposalDevelopmentDocument)
      * 
-     * @see org.kuali.kra.proposaldevelopment.rule.SaveKeyPersonRule#processSaveKeyPersonBusinessRules(org.kuali.coeus.propdev.impl.core.ProposalDevelopmentDocument)
+     * @see org.kuali.coeus.propdev.impl.person.keyperson.SaveKeyPersonRule#processSaveKeyPersonBusinessRules(org.kuali.coeus.propdev.impl.core.ProposalDevelopmentDocument)
      */
     public boolean processSaveKeyPersonBusinessRules(ProposalDevelopmentDocument document) {
         LOG.info("In processSaveKeyPersonBusinessRules()");

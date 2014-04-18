@@ -22,6 +22,7 @@ import org.apache.struts.action.ActionRedirect;
 import org.kuali.coeus.common.framework.version.VersionException;
 import org.kuali.coeus.common.framework.version.VersioningService;
 import org.kuali.coeus.common.framework.attachment.KcAttachmentService;
+import org.kuali.coeus.common.framework.keyword.KeywordsService;
 import org.kuali.coeus.sys.framework.auth.task.ApplicationTask;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.award.home.fundingproposal.AwardFundingProposal;
@@ -40,7 +41,6 @@ import org.kuali.kra.institutionalproposal.service.InstitutionalProposalService;
 import org.kuali.kra.institutionalproposal.service.InstitutionalProposalVersioningService;
 import org.kuali.kra.institutionalproposal.web.struts.form.InstitutionalProposalForm;
 import org.kuali.kra.negotiations.service.NegotiationService;
-import org.kuali.kra.service.KeywordsService;
 import org.kuali.rice.core.api.util.RiceConstants;
 import org.kuali.rice.coreservice.framework.parameter.ParameterService;
 import org.kuali.rice.kew.api.exception.WorkflowException;
@@ -329,7 +329,7 @@ public class InstitutionalProposalHomeAction extends InstitutionalProposalAction
             getProposalLogService().promoteProposalLog(proposalLog.getProposalNumber());
             this.getNegotationService().promoteProposalLogNegotiation(proposalLog.getProposalNumber(), ip.getProposalNumber());
         }
-        ip.setSponsorNihMultiplePi(getSponsorService().isSponsorNihMultiplePi(ip));
+        ip.setSponsorNihMultiplePi(getSponsorHierarchyService().isSponsorNihMultiplePi(ip.getSponsorCode()));
         return forward;
     }   
     

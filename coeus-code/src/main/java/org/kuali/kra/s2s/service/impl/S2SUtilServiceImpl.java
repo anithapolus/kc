@@ -22,8 +22,9 @@ import org.apache.commons.logging.LogFactory;
 import org.kuali.coeus.common.framework.org.Organization;
 import org.kuali.coeus.common.framework.person.KcPerson;
 import org.kuali.coeus.common.framework.person.KcPersonService;
+import org.kuali.coeus.common.framework.person.attr.CitizenshipType;
+import org.kuali.coeus.common.framework.person.attr.CitizenshipTypeService;
 import org.kuali.coeus.common.framework.rolodex.Rolodex;
-import org.kuali.coeus.common.framework.sponsor.SponsorService;
 import org.kuali.coeus.common.framework.unit.Unit;
 import org.kuali.coeus.common.framework.unit.UnitService;
 import org.kuali.coeus.common.framework.unit.admin.UnitAdministrator;
@@ -36,9 +37,9 @@ import org.kuali.kra.budget.personnel.BudgetPersonnelDetails;
 import org.kuali.kra.infrastructure.CitizenshipTypes;
 import org.kuali.kra.institutionalproposal.proposaladmindetails.ProposalAdminDetails;
 import org.kuali.kra.proposaldevelopment.bo.DevelopmentProposal;
-import org.kuali.kra.proposaldevelopment.bo.Narrative;
+import org.kuali.coeus.propdev.impl.attachment.Narrative;
 import org.kuali.coeus.propdev.impl.person.ProposalPerson;
-import org.kuali.kra.proposaldevelopment.questionnaire.ProposalDevelopmentModuleQuestionnaireBean;
+import org.kuali.coeus.propdev.impl.question.ProposalDevelopmentModuleQuestionnaireBean;
 import org.kuali.kra.proposaldevelopment.service.NarrativeService;
 import org.kuali.kra.questionnaire.Questionnaire;
 import org.kuali.kra.questionnaire.QuestionnaireQuestion;
@@ -46,13 +47,12 @@ import org.kuali.kra.questionnaire.answer.Answer;
 import org.kuali.kra.questionnaire.answer.AnswerHeader;
 import org.kuali.kra.questionnaire.answer.ModuleQuestionnaireBean;
 import org.kuali.kra.questionnaire.answer.QuestionnaireAnswerService;
-import org.kuali.coeus.propdev.impl.s2s.ProposalDevelopmentS2sQuestionnaireService;
+import org.kuali.coeus.propdev.impl.s2s.question.ProposalDevelopmentS2sQuestionnaireService;
 import org.kuali.coeus.propdev.impl.s2s.S2sOpportunity;
 import org.kuali.kra.s2s.generator.bo.DepartmentalPerson;
 import org.kuali.kra.s2s.generator.bo.KeyPersonInfo;
 import org.kuali.kra.s2s.service.S2SUtilService;
 import org.kuali.kra.s2s.util.S2SConstants;
-import org.kuali.kra.service.CitizenshipTypeService;
 import org.kuali.rice.coreservice.framework.parameter.ParameterService;
 import org.kuali.rice.krad.service.BusinessObjectService;
 import org.kuali.rice.location.api.country.Country;
@@ -78,7 +78,6 @@ public class S2SUtilServiceImpl implements S2SUtilService {
     private BusinessObjectService businessObjectService;
     private ParameterService parameterService;
     private KcPersonService kcPersonService;
-    private SponsorService sponsorService;
     private NarrativeService narrativeService;
     private CitizenshipTypeService citizenshipTypeService;
     private UnitService unitService;
@@ -757,24 +756,6 @@ public class S2SUtilServiceImpl implements S2SUtilService {
         fullMonthCount = fullMonthCount - 1;
         monthCount = monthCount.add(new ScaleTwoDecimal(fullMonthCount)).add(new ScaleTwoDecimal(startMonthFraction)).add(new ScaleTwoDecimal(endMonthFraction));
         return monthCount;
-    }
-
-    /**
-     * Gets the sponsorService attribute.
-     * 
-     * @return Returns the sponsorService.
-     */
-    public SponsorService getSponsorService() {
-        return sponsorService;
-    }
-
-    /**
-     * Sets the sponsorService attribute value.
-     * 
-     * @param sponsorService The sponsorService to set.
-     */
-    public void setSponsorService(SponsorService sponsorService) {
-        this.sponsorService = sponsorService;
     }
 
     /**
