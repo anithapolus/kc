@@ -43,26 +43,17 @@
     <property name="summary" value="S2s Revision Type Code" />
     <property name="description" value="S2s Revision Type Code" />
     <property name="controlField">
-                        <bean parent="Uif-DropdownControl"/>
-                </property>
-     <!--  <property name="control">
-                        <bean parent="SelectControlDefinition" p:businessObjectClass="org.kuali.coeus.propdev.impl.s2s.S2sRevisionType" p:valuesFinderClass="org.kuali.coeus.sys.framework.keyvalue.ExtendedPersistableBusinessObjectValuesFinder" p:includeKeyInLabel="false" p:keyAttribute="s2sRevisionTypeCode" p:labelAttribute="description"  />
-                </property> -->
-                <property name="optionsFinder">
-                        <bean class="org.kuali.coeus.sys.framework.keyvalue.ExtendedPersistableBusinessObjectValuesFinder">
-                                <property name="businessObjectClass" value="org.kuali.coeus.propdev.impl.s2s.S2sRevisionType"/>
-                                <property name="includeKeyInDescription" value="true"/>
-                                <property name="keyAttributeName" value="s2sRevisionTypeCode"/>
-                                <property name="labelAttributeName" value="description"/>
-                        </bean>
-                </property>  
-              <!--   <property name="control">
-			<bean parent="Uif-DropdownControl"/>
-		</property>
-		<property name="optionsFinder">
-			<bean class="org.kuali.kra.proposaldevelopment.lookup.keyvalue.LeadUnitValuesFinder" p:addBlankOption="false"/>
-		</property> -->
-  </bean>
+     	<bean parent="Uif-DropdownControl"/>
+     </property>
+     <property name="optionsFinder">
+      	<bean class="org.kuali.coeus.sys.framework.keyvalue.ExtendedPersistableBusinessObjectValuesFinder">
+        	<property name="businessObjectClass" value="org.kuali.coeus.propdev.impl.s2s.S2sRevisionType"/>
+            <property name="includeKeyInDescription" value="true"/>
+            <property name="keyAttributeName" value="s2sRevisionTypeCode"/>
+             <property name="labelAttributeName" value="description"/>
+          </bean>
+      </property>  
+   </bean>
 
   <bean id="S2sRevisionType-description" parent="S2sRevisionType-description-parentBean"/>
   <bean id="S2sRevisionType-description-parentBean" abstract="true" parent="AttributeDefinition">
