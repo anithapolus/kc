@@ -104,8 +104,12 @@ public class S2sOpportunity extends KcPersistableBusinessObjectBase {
     @JoinColumn(name = "PROVIDER", referencedColumnName = "CODE", insertable = false, updatable = false)
     private S2sProvider s2sProvider;
 
-    @OneToOne(targetEntity = DevelopmentProposal.class, cascade = { CascadeType.REFRESH })
+   /* @OneToOne(targetEntity = DevelopmentProposal.class, cascade = { CascadeType.REFRESH })
     @JoinColumn(name = "PROPOSAL_NUMBER", referencedColumnName = "PROPOSAL_NUMBER", insertable = false, updatable = false)
+    private DevelopmentProposal developmentProposal;*/
+    
+    /*@OneToOne(cascade = { CascadeType.REFRESH })
+    @JoinColumn(name = "PROPOSAL_NUMBER", insertable = false, updatable = false)*/
     private DevelopmentProposal developmentProposal;
 
     public String getProposalNumber() {
