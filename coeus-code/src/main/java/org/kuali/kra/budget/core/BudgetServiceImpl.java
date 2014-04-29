@@ -45,8 +45,8 @@ import org.kuali.kra.budget.versions.*;
 import org.kuali.kra.budget.web.struts.form.BudgetForm;
 import org.kuali.kra.infrastructure.Constants;
 import org.kuali.kra.infrastructure.KeyConstants;
-import org.kuali.kra.proposaldevelopment.budget.bo.BudgetSubAwardPeriodDetail;
-import org.kuali.kra.proposaldevelopment.budget.modular.BudgetModular;
+import org.kuali.coeus.propdev.impl.budget.subaward.BudgetSubAwardPeriodDetail;
+import org.kuali.coeus.propdev.impl.budget.modular.BudgetModular;
 import org.kuali.kra.service.FiscalYearMonthService;
 import org.kuali.rice.core.api.util.KeyValue;
 import org.kuali.rice.core.web.format.FormatException;
@@ -453,22 +453,6 @@ public class BudgetServiceImpl<T extends BudgetParent> implements BudgetService<
         }
         
         return panelName.toString();
-    }
-
-    @Override
-    public String getParticipantSupportCategoryCode() {
-        return parameterService.getParameterValueAsString(BudgetDocument.class, Constants.BUDGET_CATEGORY_TYPE_PARTICIPANT_SUPPORT);
-    }
-
-    @Override
-    public List<BudgetLineItem> getMatchingLineItems(List<BudgetLineItem> lineItems, List<String> budgetCategoryType) {
-        List<BudgetLineItem> result = new ArrayList<BudgetLineItem>();
-        for (BudgetLineItem lineItem : lineItems) {
-            if (budgetCategoryType.contains(lineItem.getBudgetCategory().getBudgetCategoryTypeCode())) {
-                result.add(lineItem);
-            }
-        }
-        return result;
     }
 
     @SuppressWarnings("unchecked")

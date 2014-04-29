@@ -17,7 +17,7 @@ package org.kuali.kra.protocol.actions;
 
 import org.kuali.coeus.common.committee.impl.service.CommitteeServiceBase;
 import org.kuali.coeus.common.framework.person.KcPersonService;
-import org.kuali.coeus.common.framework.rolodex.RolodexService;
+import org.kuali.coeus.common.api.rolodex.RolodexService;
 import org.kuali.coeus.sys.framework.keyvalue.FormViewAwareUifKeyValuesFinderBase;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.rice.krad.service.BusinessObjectService;
@@ -39,7 +39,7 @@ public abstract class ProtocolActionsKeyValuesBase extends FormViewAwareUifKeyVa
     private KeyValuesService keyValuesService;
     
     /**
-     * This method returns an instance of BusinessObjectServe from the KraServiceLocator.
+     * This method returns an instance of BusinessObjectServe from the KcServiceLocator.
      * @return BusinessObjectService
      */
     public BusinessObjectService getBusinessObjectService() {

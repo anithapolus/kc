@@ -31,10 +31,7 @@ import org.kuali.coeus.common.specialreview.impl.service.SpecialReviewService;
 import org.kuali.coeus.propdev.impl.copy.CopyProposalEvent;
 import org.kuali.coeus.propdev.impl.copy.ProposalCopyCriteria;
 import org.kuali.coeus.propdev.impl.copy.ProposalCopyService;
-import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentAction;
-import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentDocument;
-import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentForm;
-import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentService;
+import org.kuali.coeus.propdev.impl.core.*;
 import org.kuali.coeus.propdev.impl.editable.ProposalChangedData;
 import org.kuali.coeus.propdev.impl.editable.ProposalOverview;
 import org.kuali.coeus.propdev.impl.state.ProposalState;
@@ -62,17 +59,14 @@ import org.kuali.kra.institutionalproposal.home.InstitutionalProposal;
 import org.kuali.kra.institutionalproposal.proposaladmindetails.ProposalAdminDetails;
 import org.kuali.kra.institutionalproposal.service.InstitutionalProposalService;
 import org.kuali.kra.institutionalproposal.specialreview.InstitutionalProposalSpecialReview;
-import org.kuali.kra.proposaldevelopment.bo.*;
-import org.kuali.kra.proposaldevelopment.budget.bo.BudgetChangedData;
+import org.kuali.coeus.propdev.impl.budget.editable.BudgetChangedData;
 import org.kuali.coeus.propdev.impl.hierarchy.ProposalHierarchyKeyConstants;
-import org.kuali.kra.proposaldevelopment.hierarchy.service.ProposalHierarchyService;
 import org.kuali.coeus.propdev.impl.notification.ProposalDevelopmentNotificationContext;
 import org.kuali.coeus.propdev.impl.notification.ProposalDevelopmentNotificationRenderer;
-import org.kuali.kra.proposaldevelopment.rule.event.BudgetDataOverrideEvent;
+import org.kuali.coeus.propdev.impl.budget.editable.BudgetDataOverrideEvent;
 import org.kuali.coeus.propdev.impl.editable.ProposalDataOverrideEvent;
-import org.kuali.kra.proposaldevelopment.rules.ProposalAttachmentSubmitToSponsorRule;
-import org.kuali.kra.proposaldevelopment.rules.ProposalDevelopmentRejectionRule;
-import org.kuali.kra.proposaldevelopment.specialreview.ProposalSpecialReview;
+import org.kuali.coeus.propdev.impl.hierarchy.ProposalHierarchyService;
+import org.kuali.coeus.propdev.impl.specialreview.ProposalSpecialReview;
 import org.kuali.kra.s2s.S2SException;
 import org.kuali.coeus.propdev.impl.s2s.S2sAppSubmission;
 import org.kuali.coeus.propdev.impl.s2s.S2sSubmissionType;
@@ -596,7 +590,7 @@ public class ProposalDevelopmentActionsAction extends ProposalDevelopmentAction 
         ProposalDevelopmentDocument pdDoc = proposalDevelopmentForm.getProposalDevelopmentDocument();
         
         proposalDevelopmentForm.setAuditActivated(true);
-        //success=KraServiceLocator.getService(KualiRuleService.class).applyRules(new DocumentAuditEvent(proposalDevelopmentForm.getProposalDevelopmentDocument()));
+        //success=KcServiceLocator.getService(KualiRuleService.class).applyRules(new DocumentAuditEvent(proposalDevelopmentForm.getProposalDevelopmentDocument()));
         //HashMap map=KNSGlobalVariables.getAuditErrorMap();
         Object question = request.getParameter(KRADConstants.QUESTION_INST_ATTRIBUTE_NAME);
         Object buttonClicked = request.getParameter(KRADConstants.QUESTION_CLICKED_BUTTON);
@@ -1511,7 +1505,7 @@ public class ProposalDevelopmentActionsAction extends ProposalDevelopmentAction 
         reportParameters.put(PrintConstants.REPORT_PERSON_NAME_KEY, helper.getTargetPersonName());
         AttachmentDataSource dataStream = currentAndPendingReportService.printCurrentAndPendingSupportReport(
                 PrintConstants.CURRENT_REPORT_TYPE, reportParameters);
-        streamToResponse(dataStream.getContent(), dataStream.getFileName(), null, response);
+        streamToResponse(dataStream.getData(), dataStream.getName(), null, response);
         return null;
     }
 
@@ -1528,7 +1522,7 @@ public class ProposalDevelopmentActionsAction extends ProposalDevelopmentAction 
         reportParameters.put(PrintConstants.REPORT_PERSON_NAME_KEY, helper.getTargetPersonName());
         AttachmentDataSource dataStream = currentAndPendingReportService.printCurrentAndPendingSupportReport(
                 PrintConstants.PENDING_REPORT_TYPE, reportParameters);
-        streamToResponse(dataStream.getContent(), dataStream.getFileName(), null, response);
+        streamToResponse(dataStream.getData(), dataStream.getName(), null, response);
         return null;
     }
 

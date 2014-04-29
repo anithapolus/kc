@@ -23,7 +23,6 @@ import org.kuali.kra.s2s.S2SException;
 import org.kuali.coeus.propdev.impl.s2s.S2sOppForms;
 import org.kuali.kra.s2s.formmapping.FormMappingInfo;
 import org.kuali.kra.s2s.formmapping.FormMappingLoader;
-import org.kuali.kra.s2s.generator.S2SGeneratorNotFoundException;
 import org.kuali.kra.s2s.util.S2SConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -67,7 +66,7 @@ public class OpportunitySchemaParser {
      * @param schema {@link String}
      * @return {@link HashMap} containing all form information
      */
-    public ArrayList<S2sOppForms> getForms(String schema) throws S2SException{
+    public ArrayList<S2sOppForms> getForms(String proposalNumber,String schema) throws S2SException{
         boolean mandatory;
         boolean available;
         DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
@@ -111,11 +110,7 @@ public class OpportunitySchemaParser {
             String formName = fullFormName.substring(0, fullFormName.indexOf(CH_COLON));
             String minOccurs = ((Element) form).getAttribute(MIN_OCCURS);
             String nameSpace = schemaElement.getAttribute(XMLNS + formName);
-            FormMappingInfo info = null;
-            try {
-                info = new FormMappingLoader().getFormInfo(nameSpace);
-            }catch (S2SGeneratorNotFoundException e) {
-            }
+            FormMappingInfo info = new FormMappingLoader().getFormInfo(proposalNumber,nameSpace);
             String displayFormName = info==null?formName:info.getFormName();
             formNames[formIndex] = nameSpace;
             for (int impIndex = 0; impIndex < importList.getLength(); impIndex++) {
@@ -131,7 +126,12 @@ public class OpportunitySchemaParser {
                     oppForm.setSchemaUrl(schemaUrl);
                     mandatory = (minOccurs == null || minOccurs.trim().equals("") || Integer.parseInt(minOccurs) > 0);
                     oppForm.setMandatory(mandatory);
-                    available = info!=null;//isAvailable(nameSpace);
+                    if(info!=null){
+                        available=true;
+                        oppForm.setUserAttachedForm(info.getUserAttachedForm());
+                    }else{
+                        available=false;
+                    }
                     oppForm.setAvailable(available);
                     oppForm.setInclude(mandatory && available);
                     schemaList.add(oppForm);

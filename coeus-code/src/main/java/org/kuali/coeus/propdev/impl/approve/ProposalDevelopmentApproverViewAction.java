@@ -35,7 +35,7 @@ import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.budget.core.Budget;
 import org.kuali.kra.budget.document.BudgetDocument;
 import org.kuali.kra.infrastructure.Constants;
-import org.kuali.kra.proposaldevelopment.specialreview.ProposalSpecialReview;
+import org.kuali.coeus.propdev.impl.specialreview.ProposalSpecialReview;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -77,8 +77,8 @@ public class ProposalDevelopmentApproverViewAction extends ProposalDevelopmentAc
         ProposalDevelopmentDocument pd = proposalDevelopmentForm.getProposalDevelopmentDocument();
         Narrative narrative = pd.getDevelopmentProposal().getNarratives().get(lineNumber);
         NarrativeAttachment narrativeAttachment = findNarrativeAttachment(narrative);
-        if(narrativeAttachment==null && !narrative.getNarrativeAttachmentList().isEmpty()){//get it from the memory
-            narrativeAttachment = narrative.getNarrativeAttachmentList().get(0);
+        if(narrativeAttachment==null){
+            narrativeAttachment = narrative.getNarrativeAttachment();
         }
         streamToResponse(narrativeAttachment,response);
         return null;
@@ -95,8 +95,8 @@ public class ProposalDevelopmentApproverViewAction extends ProposalDevelopmentAc
         propPersonBioAttVal.put(BIOGRAPHY_NUMBER, propPersonBio.getBiographyNumber()+"");
         propPersonBioAttVal.put(PROPOSAL_PERSON_NUMBER, propPersonBio.getProposalPersonNumber()+"");
         ProposalPersonBiographyAttachment propPersonBioAttachment = (ProposalPersonBiographyAttachment)getBusinessObjectService().findByPrimaryKey(ProposalPersonBiographyAttachment.class, propPersonBioAttVal);
-        if(propPersonBioAttachment==null && !propPersonBio.getPersonnelAttachmentList().isEmpty()){//get it from the memory
-            propPersonBioAttachment = propPersonBio.getPersonnelAttachmentList().get(0);
+        if(propPersonBioAttachment==null ){
+            propPersonBioAttachment = propPersonBio.getPersonnelAttachment();
         }
         streamToResponse(propPersonBioAttachment,response);
         return  null;
@@ -111,8 +111,8 @@ public class ProposalDevelopmentApproverViewAction extends ProposalDevelopmentAc
         ProposalDevelopmentDocument pd = proposalDevelopmentForm.getProposalDevelopmentDocument();
         Narrative narrative = pd.getDevelopmentProposal().getInstituteAttachments().get(lineNumber);
         NarrativeAttachment narrativeAttachment = findNarrativeAttachment(narrative);
-        if(narrativeAttachment==null && !narrative.getNarrativeAttachmentList().isEmpty()){//get it from the memory
-            narrativeAttachment = narrative.getNarrativeAttachmentList().get(0);
+        if(narrativeAttachment==null){
+            narrativeAttachment = narrative.getNarrativeAttachment();
         }
         streamToResponse(narrativeAttachment,response); 
         return null;
@@ -201,7 +201,7 @@ public class ProposalDevelopmentApproverViewAction extends ProposalDevelopmentAc
         ActionForward forward = mapping.findForward(MAPPING_BASIC);
         if (budgetFormToPrint != null) {
             AttachmentDataSource dataStream = getBudgetPrintService().readBudgetPrintStream(budget,budgetFormToPrint);
-            if(dataStream.getContent()!=null){
+            if(dataStream.getData()!=null){
                 streamToResponse(dataStream, response);
                 forward = null;
             }

@@ -42,7 +42,7 @@ import org.kuali.kra.irb.protocol.participant.ProtocolParticipant;
 import org.kuali.kra.irb.protocol.participant.ProtocolParticipantService;
 import org.kuali.kra.irb.protocol.reference.*;
 import org.kuali.kra.irb.protocol.research.ProtocolResearchAreaService;
-import org.kuali.kra.proposaldevelopment.bo.DevelopmentProposal;
+import org.kuali.coeus.propdev.impl.core.DevelopmentProposal;
 import org.kuali.kra.protocol.ProtocolDocumentBase;
 import org.kuali.kra.protocol.actions.submit.ProtocolSubmissionBase;
 import org.kuali.kra.protocol.protocol.funding.ProtocolFundingSourceBase;
@@ -200,7 +200,7 @@ public class ProtocolProtocolAction extends ProtocolAction {
 
         if (applyRules(new AddProtocolReferenceEvent(Constants.EMPTY_STRING, protocolForm.getProtocolDocument(), newProtocolReference))) {
 
-            ProtocolReferenceService service = KraServiceLocator.getService(ProtocolReferenceService.class);
+            ProtocolReferenceService service = KcServiceLocator.getService(ProtocolReferenceService.class);
 
             service.addProtocolReference(protocolForm.getProtocolDocument().getProtocol(), newProtocolReference);
 

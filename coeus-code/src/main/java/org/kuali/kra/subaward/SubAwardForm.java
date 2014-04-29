@@ -17,6 +17,7 @@ package org.kuali.kra.subaward;
 
 import org.apache.struts.upload.FormFile;
 import org.kuali.coeus.common.framework.rolodex.Rolodex;
+import org.kuali.coeus.common.framework.sponsor.form.SponsorFormTemplateList;
 import org.kuali.coeus.common.framework.version.history.VersionHistory;
 import org.kuali.coeus.common.framework.version.history.VersionHistoryService;
 import org.kuali.coeus.common.notification.impl.web.struts.form.NotificationHelper;
@@ -42,12 +43,15 @@ import org.kuali.rice.core.api.CoreApiServiceLocator;
 import org.kuali.rice.core.api.config.property.ConfigurationService;
 import org.kuali.rice.kew.api.KewApiConstants;
 import org.kuali.rice.kew.api.WorkflowDocument;
+import org.kuali.rice.kns.util.ActionFormUtilMap;
 import org.kuali.rice.kns.web.ui.ExtraButton;
 import org.kuali.rice.kns.web.ui.HeaderField;
 import org.kuali.rice.krad.util.GlobalVariables;
 
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 /**
  * This class represents the SubAward Form Struts class....
  */
@@ -73,7 +77,41 @@ implements PermissionsForm, AuditableForm, CustomDataDocumentForm {
     private int defaultFollowUpDayDifference = 0;
     private SubAwardAttachmentFormBean subAwardAttachmentFormBean;
     private SubAwardReports newSubAwardReport;
+    private SubAwardPrintAgreement subAwardPrintAgreement;
+    private List<SponsorFormTemplateList> sponsorFormTemplates;
     
+
+    /**
+     * Gets the sponsorFormTemplates attribute. 
+     * @return Returns the sponsorFormTemplates.
+     */
+    public List<SponsorFormTemplateList> getSponsorFormTemplates() {
+        return sponsorFormTemplates;
+    }
+
+    /**
+     * Sets the sponsorFormTemplates attribute value.
+     * @param sponsorFormTemplates The sponsorFormTemplates to set.
+     */
+    public void setSponsorFormTemplates(List<SponsorFormTemplateList> sponsorFormTemplates) {
+        this.sponsorFormTemplates = sponsorFormTemplates;
+    }
+
+    /**
+     * Gets the subAwardPrintAgreement attribute. 
+     * @return Returns the subAwardPrintAgreement.
+     */
+    public SubAwardPrintAgreement getSubAwardPrintAgreement() {
+        return subAwardPrintAgreement;
+    }
+
+    /**
+     * Sets the subAwardPrintAgreement attribute value.
+     * @param subAwardPrintAgreement The subAwardPrintAgreement to set.
+     */
+    public void setSubAwardPrintAgreement(SubAwardPrintAgreement subAwardPrintAgreement) {
+        this.subAwardPrintAgreement = subAwardPrintAgreement;
+    }
 
     /**
      * Gets the newSubAwardReport attribute. 
@@ -238,7 +276,7 @@ implements PermissionsForm, AuditableForm, CustomDataDocumentForm {
         newSubAwardAmountInfo = new SubAwardAmountInfo();
         notificationHelper = new NotificationHelper<SubAwardNotificationContext>();
         subAwardAttachmentFormBean = new SubAwardAttachmentFormBean(this);
-        
+        subAwardPrintAgreement = new SubAwardPrintAgreement();
     }
 
     /**
@@ -437,6 +475,20 @@ implements PermissionsForm, AuditableForm, CustomDataDocumentForm {
         }
         
         return displayEditButton;
+    }
+    /**
+     * This method disables the caching of drop down lists.  
+     * Subaward Print has a drop down list whose value depends on another drop down list.  With caching enabled the
+     * drop down list will always be empty.  Disabling caching will reload the drop down list whenever the page is posted.
+     * 
+     * @see org.kuali.rice.kns.web.struts.form.KualiMaintenanceForm#populate(javax.servlet.http.HttpServletRequest)
+     */
+    @Override
+    public void populate(HttpServletRequest request) {
+        super.populate(request);
+        if (getActionFormUtilMap() != null && getActionFormUtilMap() instanceof ActionFormUtilMap) {
+            ((ActionFormUtilMap) getActionFormUtilMap()).setCacheValueFinderResults(false);
+        } 
     }
     
     protected VersionHistoryService getVersionHistoryService() {

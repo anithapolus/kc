@@ -20,8 +20,8 @@ import org.kuali.coeus.sys.framework.workflow.KcWorkflowService;
 import org.kuali.kra.infrastructure.PermissionConstants;
 import org.kuali.coeus.propdev.impl.auth.task.ProposalTask;
 import org.kuali.coeus.propdev.impl.hierarchy.ProposalHierarchyException;
-import org.kuali.coeus.propdev.impl.core.ProposalAuthorizer;
-import org.kuali.kra.proposaldevelopment.hierarchy.service.ProposalHierarchyService;
+import org.kuali.coeus.propdev.impl.auth.task.ProposalAuthorizer;
+import org.kuali.coeus.propdev.impl.hierarchy.ProposalHierarchyService;
 
 /**
  * The Alter Proposal Data Authorizer will only a user to

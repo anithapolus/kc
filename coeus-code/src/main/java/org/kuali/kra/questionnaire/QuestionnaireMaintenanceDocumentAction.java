@@ -387,7 +387,7 @@ public class QuestionnaireMaintenanceDocumentAction extends KualiMaintenanceDocu
         ActionForward forward = super.edit(mapping, form, request, response);
         QuestionnaireMaintenanceForm qnForm = (QuestionnaireMaintenanceForm) form;
         if (qnForm.isReadOnly()) {
-        //    if (!(qnnrs.isEmpty()) && !KraServiceLocator.getService(DocumentService.class).documentExists(request.getParameter("docId"))) {
+        //    if (!(qnnrs.isEmpty()) && !KcServiceLocator.getService(DocumentService.class).documentExists(request.getParameter("docId"))) {
             // we are responding to a 'view' action for an approved questionnaire
 //            qnForm.getDocInfo().get(1).setDisplayValue("Final");
             //docStatus.setDisplayValue("Final");
@@ -583,7 +583,7 @@ public class QuestionnaireMaintenanceDocumentAction extends KualiMaintenanceDocu
         }
         // TODO : this is not a transaction document, so set to null ?
         AttachmentDataSource dataStream = getQuestionnairePrintingService().printQuestionnaire(null, reportParameters);
-        if (dataStream.getContent() != null) {
+        if (dataStream.getData() != null) {
             PrintingUtils.streamToResponse(dataStream, response);
             forward = null;
         }

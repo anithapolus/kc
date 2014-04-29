@@ -28,17 +28,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xmlbeans.XmlObject;
 import org.kuali.coeus.common.framework.person.KcPerson;
-import org.kuali.coeus.common.framework.rolodex.Rolodex;
-import org.kuali.coeus.common.framework.rolodex.RolodexService;
-import org.kuali.coeus.propdev.impl.attachment.Narrative;
+import org.kuali.coeus.common.api.rolodex.RolodexContract;
+import org.kuali.coeus.common.api.rolodex.RolodexService;
+import org.kuali.coeus.propdev.impl.core.DevelopmentProposal;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentDocument;
 import org.kuali.coeus.propdev.impl.person.ProposalPerson;
 import org.kuali.coeus.propdev.impl.person.ProposalPersonComparator;
 import org.kuali.coeus.propdev.impl.person.ProposalPersonDegree;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.infrastructure.Constants;
-import org.kuali.kra.proposaldevelopment.bo.*;
 import org.kuali.coeus.common.api.sponsor.hierarchy.SponsorHierarchyService;
+import org.kuali.coeus.propdev.api.attachment.NarrativeContract;
 import org.kuali.kra.s2s.generator.impl.RRKeyPersonExpandedBaseGenerator;
 import org.kuali.kra.s2s.util.AuditError;
 import org.kuali.kra.s2s.util.S2SConstants;
@@ -56,9 +56,7 @@ import java.util.List;
 public class RRKeyPersonExpandedV2_0Generator extends
 		RRKeyPersonExpandedBaseGenerator {
 
-	private static final Log LOG = LogFactory
-			.getLog(RRKeyPersonExpandedV2_0Generator.class);
-	Rolodex rolodex;
+	RolodexContract rolodex;
 	private static final int MAX_KEY_PERSON_COUNT = 100;
 	/*
 	 * This method gives details of Principal Investigator,KeyPersons and the
@@ -95,10 +93,10 @@ public class RRKeyPersonExpandedV2_0Generator extends
 				setCurrentPendingTypeAttachment(rrKeyPersonExpanded,
 						extraPerson);
 			}
-			for (Narrative narrative : pdDoc.getDevelopmentProposal()
+			for (NarrativeContract narrative : pdDoc.getDevelopmentProposal()
 					.getNarratives()) {
-				if (narrative.getNarrativeTypeCode() != null) {
-					if (Integer.parseInt(narrative.getNarrativeTypeCode()) == PROFILE_TYPE) {
+				if (narrative.getNarrativeType().getCode() != null) {
+					if (Integer.parseInt(narrative.getNarrativeType().getCode()) == PROFILE_TYPE) {
 						setProfileTypeAttachment(rrKeyPersonExpanded, narrative);
 					}
 				}
@@ -110,7 +108,7 @@ public class RRKeyPersonExpandedV2_0Generator extends
 	 * This method is used to add profile type attachment to rrKeyPersonExpanded
 	 */
 	private void setProfileTypeAttachment(
-			RRKeyPersonExpanded20 rrKeyPersonExpanded, Narrative narrative) {
+			RRKeyPersonExpanded20 rrKeyPersonExpanded, NarrativeContract narrative) {
 		AttachedFileDataType attachedFileDataType = getAttachedFileType(narrative);
 		if(attachedFileDataType != null){
 			AdditionalProfilesAttached additionalProfilesAttached = AdditionalProfilesAttached.Factory

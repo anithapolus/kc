@@ -16,7 +16,7 @@
 package org.kuali.kra.s2s.generator.impl;
 
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentDocument;
-import org.kuali.kra.proposaldevelopment.bo.DevelopmentProposal;
+import org.kuali.coeus.propdev.impl.core.DevelopmentProposal;
 import org.kuali.coeus.propdev.impl.attachment.Narrative;
 import org.kuali.coeus.propdev.impl.attachment.NarrativeAttachment;
 import org.kuali.coeus.propdev.impl.attachment.NarrativeType;
@@ -56,28 +56,26 @@ public class PHS398ResearchPlanV1_2GeneratorTest extends
 		InputStream inStream = resource.getInputStream();
 		BufferedInputStream bis = new BufferedInputStream(inStream);
 		byte[] narrativePdf = new byte[bis.available()];
-		narrativeAttachment.setNarrativeData(narrativePdf);
-		List<NarrativeAttachment> narrativeList = new ArrayList<NarrativeAttachment>();
-		narrativeList.add(narrativeAttachment);
+		narrativeAttachment.setData(narrativePdf);
+
 		narrative.setProposalNumber(developmentProposal.getProposalNumber());
 		narrative.setModuleNumber(1);
 		narrative.setModuleSequenceNumber(1);
 		narrative.setModuleStatusCode("C");
 		narrative.setNarrativeTypeCode("20");
-		narrative.setNarrativeAttachmentList(narrativeList);
+		narrative.setNarrativeAttachment(narrativeAttachment);
 		narrative.setObjectId("12345678890abcd");
-		narrative.setFileName("exercise1");
+		narrative.setName("exercise1");
 		NarrativeType narrativeType = new NarrativeType();
-        narrativeType.setNarrativeTypeCode("1");
-        narrativeType.setAllowMultiple("Y");
-        narrativeType.setSystemGenerated("N");
+        narrativeType.setCode("1");
+        narrativeType.setAllowMultiple(true);
+        narrativeType.setSystemGenerated(false);
 		narrativeType.setDescription("Testing for Project Attachment");
         getService(DataObjectService.class).save(narrativeType);
 		narrative.setNarrativeType(narrativeType);
         narrative.setNarrativeTypeCode("1");
 		naList.add(narrative);
-		//getService(DataObjectService.class).save(narrative);
-		narrative.getNarrativeAttachmentList().clear();
+		narrative.setNarrativeAttachment(null);
 		developmentProposal.setNarratives(naList);
 		document.setDevelopmentProposal(developmentProposal);
 	}

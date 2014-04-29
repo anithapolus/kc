@@ -26,9 +26,9 @@ import org.apache.xmlbeans.XmlObject;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentDocument;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.infrastructure.KeyConstants;
-import org.kuali.kra.proposaldevelopment.bo.DevelopmentProposal;
-import org.kuali.coeus.propdev.impl.attachment.Narrative;
+import org.kuali.coeus.propdev.impl.core.DevelopmentProposal;
 import org.kuali.kra.s2s.S2SException;
+import org.kuali.coeus.propdev.api.attachment.NarrativeContract;
 import org.kuali.kra.s2s.generator.S2SBaseFormGenerator;
 import org.kuali.kra.s2s.util.S2SConstants;
 import org.kuali.rice.coreservice.framework.parameter.ParameterService;
@@ -70,9 +70,9 @@ public class PHS398ResTrainProgPlanV1_0Generator extends S2SBaseFormGenerator{
         ArrayList<AttachedFileDataType> attachedFileDataTypes = new ArrayList<AttachedFileDataType>();
 
         AttachedFileDataType attachedFileDataType;
-        for (Narrative narrative : developmentProposal.getNarratives()) {
-             if (narrative.getNarrativeTypeCode() != null) {
-                 switch(Integer.parseInt(narrative.getNarrativeTypeCode())){
+        for (NarrativeContract narrative : developmentProposal.getNarratives()) {
+             if (narrative.getNarrativeType().getCode() != null) {
+                 switch(Integer.parseInt(narrative.getNarrativeType().getCode())){
                      case(PHS_RES_TRAINING_PLAN_INTRODUCTION_112):
                          attachedFileDataType = getAttachedFileType(narrative);
                          IntroductionToApplication introductionToApplication = researchTrainingProgramPlanAttachments.addNewIntroductionToApplication();
@@ -232,13 +232,6 @@ public class PHS398ResTrainProgPlanV1_0Generator extends S2SBaseFormGenerator{
             proposalTypeEnum =  ApplicationType.TypeOfApplication.RESUBMISSION;
         return proposalTypeEnum;
     }
-
-//    public XmlObject getFormObject(XmlObject xmlObject) {
-//        PHS398ResearchTrainingProgramPlanDocument phs398ResTrainProgPlanDocument =PHS398ResearchTrainingProgramPlanDocument.Factory.newInstance();
-//        PHS398ResearchTrainingProgramPlan phs398ResTrainProgPlan = (PHS398ResearchTrainingProgramPlan)xmlObject;
-//        phs398ResTrainProgPlanDocument.setPHS398ResearchTrainingProgramPlan(phs398ResTrainProgPlan);
-//        return phs398ResTrainProgPlanDocument;
-//    }
 
     /**
      * Gets the parameterService attribute. 

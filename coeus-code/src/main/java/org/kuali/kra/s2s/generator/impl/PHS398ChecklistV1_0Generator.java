@@ -26,15 +26,15 @@ import gov.grants.apply.system.globalLibraryV10.YesNoDataType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xmlbeans.XmlObject;
-import org.kuali.coeus.common.framework.rolodex.Rolodex;
-import org.kuali.coeus.common.framework.rolodex.RolodexService;
+import org.kuali.coeus.common.api.rolodex.RolodexContract;
+import org.kuali.coeus.common.api.rolodex.RolodexService;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentDocument;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.budget.core.Budget;
 import org.kuali.kra.budget.distributionincome.BudgetProjectIncome;
-import org.kuali.coeus.propdev.impl.attachment.Narrative;
 import org.kuali.kra.questionnaire.answer.Answer;
 import org.kuali.kra.questionnaire.answer.AnswerHeader;
+import org.kuali.coeus.propdev.api.attachment.NarrativeContract;
 import org.kuali.kra.s2s.util.S2SConstants;
 import org.kuali.rice.kew.api.exception.WorkflowException;
 
@@ -98,7 +98,7 @@ public class PHS398ChecklistV1_0Generator extends PHS398ChecklistBaseGenerator {
             phsChecklist.setIsChangeOfPDPI(YesNoDataType.YES);
             if (pIChangeExplanation != null) {
                 RolodexService rolodexService = KcServiceLocator.getService(RolodexService.class);
-                Rolodex rolodex = rolodexService.getRolodex(Integer.valueOf(pIChangeExplanation));
+                RolodexContract rolodex = rolodexService.getRolodex(Integer.valueOf(pIChangeExplanation));
                 HumanNameDataType formerPDName = globLibV10Generator
                         .getHumanNameDataType(rolodex);
                 if (formerPDName != null
@@ -167,10 +167,10 @@ public class PHS398ChecklistV1_0Generator extends PHS398ChecklistBaseGenerator {
 			phsChecklist.setProgramIncome(YesNoDataType.NO);
 		}
 		AttachedFileDataType attachedFileDataType = null;
-		for (Narrative narrative : pdDoc.getDevelopmentProposal()
+		for (NarrativeContract narrative : pdDoc.getDevelopmentProposal()
 				.getNarratives()) {
-			if (narrative.getNarrativeTypeCode() != null
-					&& Integer.parseInt(narrative.getNarrativeTypeCode()) == NARRATIVE_CODE_CERTIFICATIONS_ATTACHMENT) {
+			if (narrative.getNarrativeType().getCode() != null
+					&& Integer.parseInt(narrative.getNarrativeType().getCode()) == NARRATIVE_CODE_CERTIFICATIONS_ATTACHMENT) {
 				attachedFileDataType = getAttachedFileType(narrative);
 				if(attachedFileDataType != null){
 					CertificationExplanation certificationExplanation = CertificationExplanation.Factory.newInstance();

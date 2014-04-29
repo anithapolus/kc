@@ -54,7 +54,6 @@ import org.kuali.kra.infrastructure.RoleConstants;
 import org.kuali.kra.infrastructure.TaskName;
 import org.kuali.kra.kim.service.ProposalRoleService;
 import org.kuali.kra.medusa.MedusaBean;
-import org.kuali.kra.proposaldevelopment.bo.DevelopmentProposal;
 import org.kuali.coeus.propdev.impl.attachment.Narrative;
 import org.kuali.coeus.propdev.impl.attachment.NarrativeStatus;
 import org.kuali.coeus.propdev.impl.attachment.NarrativeType;
@@ -65,20 +64,21 @@ import org.kuali.coeus.propdev.impl.person.ProposalPerson;
 import org.kuali.coeus.propdev.impl.person.attachment.ProposalPersonBiography;
 import org.kuali.coeus.propdev.impl.person.ProposalPersonDegree;
 import org.kuali.coeus.propdev.impl.location.ProposalSite;
-import org.kuali.kra.proposaldevelopment.budget.bo.BudgetChangedData;
+import org.kuali.coeus.propdev.impl.budget.editable.BudgetChangedData;
 import org.kuali.coeus.propdev.impl.auth.task.ProposalTask;
 import org.kuali.coeus.propdev.impl.hierarchy.HierarchyProposalSummary;
 import org.kuali.coeus.propdev.impl.notification.ProposalDevelopmentNotificationContext;
 import org.kuali.coeus.propdev.impl.question.ProposalDevelopmentQuestionnaireHelper;
 import org.kuali.coeus.propdev.impl.s2s.question.ProposalDevelopmentS2sQuestionnaireHelper;
 import org.kuali.coeus.propdev.impl.person.question.ProposalPersonQuestionnaireHelper;
-import org.kuali.kra.proposaldevelopment.service.KeyPersonnelService;
+import org.kuali.coeus.propdev.impl.person.KeyPersonnelService;
 import org.kuali.coeus.propdev.impl.specialreview.SpecialReviewHelper;
 import org.kuali.coeus.propdev.impl.location.CongressionalDistrictHelper;
 import org.kuali.kra.questionnaire.MultiQuestionableFormInterface;
 import org.kuali.kra.questionnaire.answer.AnswerHeader;
 import org.kuali.coeus.propdev.impl.s2s.S2sAppSubmission;
 import org.kuali.coeus.propdev.impl.s2s.S2sOpportunity;
+import org.kuali.coeus.propdev.impl.s2s.S2sUserAttachedForm;
 import org.kuali.kra.budget.web.struts.form.BudgetVersionFormBase;
 import org.kuali.kra.web.struts.form.CustomDataDocumentForm;
 import org.kuali.rice.core.api.CoreApiServiceLocator;
@@ -149,6 +149,8 @@ public class ProposalDevelopmentForm extends BudgetVersionFormBase implements Re
     private List<NarrativeUserRights> newNarrativeUserRights;
     private S2sOpportunity newS2sOpportunity;
     private List<S2sAppSubmission> newS2sAppSubmission;
+    private S2sUserAttachedForm newS2sUserAttachedForm;
+
     private SortedMap<String, List<CustomAttributeDocument>> customAttributeGroups;
     private Map<String, String[]> customAttributeValues;
     private List<Narrative> narratives;
@@ -311,6 +313,7 @@ public class ProposalDevelopmentForm extends BudgetVersionFormBase implements Re
         setNewProposalAbstract(new ProposalAbstract());
         setNewProposalUser(new ProposalUser());
         setNewS2sOpportunity(new S2sOpportunity());
+        setNewS2sUserAttachedForm(new S2sUserAttachedForm());
         setNewPerformanceSite(new ProposalSite());
         setNewOtherOrganization(new ProposalSite());
         setApplicantOrganizationHelper(new CongressionalDistrictHelper());
@@ -2085,4 +2088,21 @@ public class ProposalDevelopmentForm extends BudgetVersionFormBase implements Re
     public NarrativeStatus getNarrativeStatusChange() {
         return narrativeStatusesChange;
     }
+
+    /**
+     * Gets the newS2sUserAttachedForm attribute. 
+     * @return Returns the newS2sUserAttachedForm.
+     */
+    public S2sUserAttachedForm getNewS2sUserAttachedForm() {
+        return newS2sUserAttachedForm;
+    }
+
+    /**
+     * Sets the newS2sUserAttachedForm attribute value.
+     * @param newS2sUserAttachedForm The newS2sUserAttachedForm to set.
+     */
+    public void setNewS2sUserAttachedForm(S2sUserAttachedForm newS2sUserAttachedForm) {
+        this.newS2sUserAttachedForm = newS2sUserAttachedForm;
+    }
+
 }

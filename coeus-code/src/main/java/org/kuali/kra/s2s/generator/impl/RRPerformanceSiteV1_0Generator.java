@@ -23,10 +23,10 @@ import gov.grants.apply.system.attachmentsV10.AttachedFileDataType;
 import gov.grants.apply.system.universalCodesV10.CountryCodeType;
 import org.apache.xmlbeans.XmlObject;
 import org.kuali.coeus.common.framework.org.Organization;
-import org.kuali.coeus.common.framework.rolodex.Rolodex;
+import org.kuali.coeus.common.api.rolodex.RolodexContract;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentDocument;
-import org.kuali.coeus.propdev.impl.attachment.Narrative;
 import org.kuali.coeus.propdev.impl.location.ProposalSite;
+import org.kuali.coeus.propdev.api.attachment.NarrativeContract;
 import org.kuali.kra.s2s.util.S2SConstants;
 
 import java.util.List;
@@ -54,7 +54,7 @@ public class RRPerformanceSiteV1_0Generator extends RRPerformanceSiteBaseGenerat
         List<ProposalSite> propsoalSites = pdDoc.getDevelopmentProposal().getProposalSites();
         SiteLocationDataType siteLocation = null;
         Organization organization = null;
-        Rolodex rolodex = null;
+        RolodexContract rolodex = null;
         
         for (ProposalSite proposalSite : propsoalSites) {
             switch(proposalSite.getLocationTypeCode()){
@@ -79,9 +79,9 @@ public class RRPerformanceSiteV1_0Generator extends RRPerformanceSiteBaseGenerat
                 siteLocation.setOrganizationName(proposalSite.getLocationName());
             }
         }
-        for (Narrative narrative : pdDoc.getDevelopmentProposal().getNarratives()) {
-            if (narrative.getNarrativeTypeCode() != null
-                    && Integer.parseInt(narrative.getNarrativeTypeCode()) == PERFORMANCE_SITES_ATTACHMENT) {
+        for (NarrativeContract narrative : pdDoc.getDevelopmentProposal().getNarratives()) {
+            if (narrative.getNarrativeType().getCode() != null
+                    && Integer.parseInt(narrative.getNarrativeType().getCode()) == PERFORMANCE_SITES_ATTACHMENT) {
             	AttachedFileDataType attachedFileDataType = getAttachedFileType(narrative);
             	if(attachedFileDataType != null){
             		rrPerformanceSite.setAttachedFile(attachedFileDataType);
@@ -97,7 +97,7 @@ public class RRPerformanceSiteV1_0Generator extends RRPerformanceSiteBaseGenerat
      * @param address
      * @param rolodex
      */
-    private void setAddress(Address address, Rolodex rolodex) {
+    private void setAddress(Address address, RolodexContract rolodex) {
         if (rolodex != null) {
             address.setStreet1(rolodex.getAddressLine1());
             address.setStreet2(rolodex.getAddressLine2());

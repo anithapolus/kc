@@ -26,8 +26,8 @@ import org.kuali.kra.budget.printing.BudgetPrintType;
 import org.kuali.kra.budget.printing.print.*;
 import org.kuali.kra.infrastructure.Constants;
 import org.kuali.coeus.common.framework.print.AttachmentDataSource;
-import org.kuali.kra.proposaldevelopment.budget.bo.BudgetPrintForm;
-import org.kuali.kra.proposaldevelopment.budget.service.BudgetPrintService;
+import org.kuali.coeus.propdev.impl.budget.print.BudgetPrintForm;
+import org.kuali.coeus.propdev.impl.budget.print.BudgetPrintService;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -107,12 +107,12 @@ public class BudgetPrintingServiceImpl implements BudgetPrintService {
 		printable.setPrintableBusinessObject(budget);
 		attachmentDataSource = getPrintingService().print(printable);
 		try {
-            attachmentDataSource.setFileName(URLEncoder.encode(fileName,"UTF-8"));
+            attachmentDataSource.setName(URLEncoder.encode(fileName,"UTF-8"));
         }
         catch (UnsupportedEncodingException e) {
-            attachmentDataSource.setFileName(fileName);
+            attachmentDataSource.setName(fileName);
         }
-		attachmentDataSource.setContentType(Constants.PDF_REPORT_CONTENT_TYPE);
+		attachmentDataSource.setType(Constants.PDF_REPORT_CONTENT_TYPE);
 		
 		return attachmentDataSource;
 	}

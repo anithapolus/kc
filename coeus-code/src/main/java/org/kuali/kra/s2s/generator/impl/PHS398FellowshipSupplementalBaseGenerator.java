@@ -15,10 +15,10 @@
  */
 package org.kuali.kra.s2s.generator.impl;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentDocument;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
-import org.kuali.kra.proposaldevelopment.budget.service.ProposalBudgetService;
+import org.kuali.coeus.propdev.impl.budget.ProposalBudgetService;
 import org.kuali.kra.s2s.generator.S2SBaseFormGenerator;
 import org.kuali.kra.s2s.generator.S2SQuestionnairing;
 import org.kuali.kra.s2s.service.S2SUtilService;
@@ -51,8 +51,7 @@ public abstract class PHS398FellowshipSupplementalBaseGenerator extends
 	protected static final char STRING_SEPRATOR = '-';
 	protected static final String SUB_CATEGORY_NOT_FOUND = "SUB CATEGORY NOT FOUND";
 	protected static final String PROPOSAL_TYPE_CODE_NEW7 = "7";
-	protected static final Integer QUESTIONNAIRE_ID_1 = 1;
-	
+
     protected static final int INTRODUCTION_TO_APPLICATION = 97;
     protected static final int SPECIFIC_AIMS = 98;
     protected static final int INCLUSION_ENROLLMENT_REPORT = 102;

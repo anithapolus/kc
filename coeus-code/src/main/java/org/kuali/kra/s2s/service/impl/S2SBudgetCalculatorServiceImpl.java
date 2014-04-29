@@ -16,10 +16,8 @@
 package org.kuali.kra.s2s.service.impl;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.kuali.coeus.common.framework.person.KcPerson;
-import org.kuali.coeus.common.framework.rolodex.Rolodex;
+import org.kuali.coeus.common.api.rolodex.RolodexContract;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentDocument;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentService;
 import org.kuali.coeus.sys.api.model.ScaleTwoDecimal;
@@ -34,8 +32,8 @@ import org.kuali.kra.budget.personnel.*;
 import org.kuali.kra.budget.rates.RateClass;
 import org.kuali.kra.infrastructure.Constants;
 import org.kuali.coeus.propdev.impl.person.ProposalPerson;
-import org.kuali.kra.proposaldevelopment.budget.modular.BudgetModularIdc;
-import org.kuali.kra.proposaldevelopment.budget.service.ProposalBudgetService;
+import org.kuali.coeus.propdev.impl.budget.modular.BudgetModularIdc;
+import org.kuali.coeus.propdev.impl.budget.ProposalBudgetService;
 import org.kuali.kra.s2s.S2SException;
 import org.kuali.coeus.budget.api.category.BudgetCategoryMapContract;
 import org.kuali.coeus.budget.api.category.BudgetCategoryMapService;
@@ -46,6 +44,7 @@ import org.kuali.kra.s2s.generator.bo.*;
 import org.kuali.kra.s2s.service.S2SBudgetCalculatorService;
 import org.kuali.kra.s2s.service.S2SUtilService;
 import org.kuali.kra.s2s.util.S2SConstants;
+import org.kuali.kra.s2s.validator.S2SErrorHandler;
 import org.kuali.rice.coreservice.framework.parameter.ParameterService;
 import org.kuali.rice.kew.api.exception.WorkflowException;
 
@@ -86,8 +85,7 @@ public class S2SBudgetCalculatorServiceImpl implements
     private static final String NID_PD_PI = "PD/PI";
     private static final String NID_CO_PD_PI = "CO-INVESTIGATOR"; 
     private static final String KEYPERSON_OTHER = "Other (Specify)";
-    private static final Log LOG = LogFactory
-                    .getLog(S2SBudgetCalculatorServiceImpl.class);
+
     private static final String PRINCIPAL_INVESTIGATOR_ROLE = "PD/PI";
     private static final BigDecimal POINT_ZERO_ONE = new ScaleTwoDecimal(0.01).bigDecimalValue();
     private BudgetCategoryMapService budgetCategoryMapService;
@@ -98,6 +96,22 @@ public class S2SBudgetCalculatorServiceImpl implements
     private BudgetPersonService budgetPersonService;
     private ProposalDevelopmentService proposalDevelopmentService;
     private SponsorHierarchyService sponsorHierarchyService;
+
+    @Override
+    public String getParticipantSupportCategoryCode() {
+        return parameterService.getParameterValueAsString(BudgetDocument.class, Constants.BUDGET_CATEGORY_TYPE_PARTICIPANT_SUPPORT);
+    }
+
+    @Override
+    public List<BudgetLineItem> getMatchingLineItems(List<BudgetLineItem> lineItems, List<String> budgetCategoryType) {
+        List<BudgetLineItem> result = new ArrayList<BudgetLineItem>();
+        for (BudgetLineItem lineItem : lineItems) {
+            if (budgetCategoryType.contains(lineItem.getBudgetCategory().getBudgetCategoryTypeCode())) {
+                result.add(lineItem);
+            }
+        }
+        return result;
+    }
 
     /**
      * 
@@ -972,25 +986,29 @@ public class S2SBudgetCalculatorServiceImpl implements
         boolean firstLoop = true;
 
         if (budget.getModularBudgetFlag()) {
-            for (BudgetModularIdc budgetModularIdc : budgetPeriod.getBudgetModular().getBudgetModularIdcs()) {
-                if (firstLoop) {
-                    appliedRate = appliedRate.add(budgetModularIdc.getIdcRate());
-                    description = budgetModularIdc.getDescription();
-                    firstLoop = false;
+            if(budgetPeriod.getBudgetModular()==null){
+                S2SErrorHandler.getError(S2SConstants.MODULAR_BUDGET_REQUIRED);
+            }else{
+                for (BudgetModularIdc budgetModularIdc : budgetPeriod.getBudgetModular().getBudgetModularIdcs()) {
+                    if (firstLoop) {
+                        appliedRate = appliedRate.add(budgetModularIdc.getIdcRate());
+                        description = budgetModularIdc.getDescription();
+                        firstLoop = false;
+                    }
+                    baseCost = baseCost.add(budgetModularIdc.getIdcBase());
+                    calculatedCost = calculatedCost.add(budgetModularIdc.getFundsRequested());
                 }
-                baseCost = baseCost.add(budgetModularIdc.getIdcBase());
-                calculatedCost = calculatedCost.add(budgetModularIdc.getFundsRequested());
+                indirectCostDetails = new IndirectCostDetails();
+                indirectCostDetails.setBase(baseCost);
+                indirectCostDetails.setBaseCostSharing(baseCostSharing);
+                indirectCostDetails.setCostSharing(calculatedCostSharing);
+                indirectCostDetails.setCostType(description);
+                indirectCostDetails.setFunds(calculatedCost);
+                indirectCostDetails.setRate(appliedRate);
+                indirectCostDetailList.add(indirectCostDetails);
+                totalIndirectCosts = totalIndirectCosts.add(calculatedCost);
+                totalIndirectCostSharing = totalIndirectCostSharing.add(calculatedCostSharing);
             }
-            indirectCostDetails = new IndirectCostDetails();
-            indirectCostDetails.setBase(baseCost);
-            indirectCostDetails.setBaseCostSharing(baseCostSharing);
-            indirectCostDetails.setCostSharing(calculatedCostSharing);
-            indirectCostDetails.setCostType(description);
-            indirectCostDetails.setFunds(calculatedCost);
-            indirectCostDetails.setRate(appliedRate);
-            indirectCostDetailList.add(indirectCostDetails);
-            totalIndirectCosts = totalIndirectCosts.add(calculatedCost);
-            totalIndirectCostSharing = totalIndirectCostSharing.add(calculatedCostSharing);
         }
         else {
             Map<String, IndirectCostDetails> costDetailsMap = new HashMap<String, IndirectCostDetails>();
@@ -1641,7 +1659,7 @@ public class S2SBudgetCalculatorServiceImpl implements
                     if (budgetPersonnelDetails.getNonEmployeeFlag()) {
                         if (budgetPersonnelDetails.getBudgetPerson().getRolodexId() != null) {
                             budgetPersonnelDetails.getBudgetPerson().refreshReferenceObject("rolodex");
-                            Rolodex rolodexPerson = budgetPersonnelDetails.getBudgetPerson().getRolodex();
+                            RolodexContract rolodexPerson = budgetPersonnelDetails.getBudgetPerson().getRolodex();
                             keyPerson = new KeyPersonInfo();
                             keyPerson.setRolodexId(rolodexPerson.getRolodexId());
                             keyPerson.setFirstName(rolodexPerson.getFirstName() == null ? S2SConstants.VALUE_UNKNOWN

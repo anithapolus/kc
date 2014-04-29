@@ -30,29 +30,26 @@ import gov.grants.apply.system.globalLibraryV20.YesNoDataType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xmlbeans.XmlObject;
-import org.kuali.coeus.common.framework.custom.arg.ArgValueLookup;
 import org.kuali.coeus.common.framework.org.Organization;
 import org.kuali.coeus.common.framework.person.KcPerson;
-import org.kuali.coeus.common.framework.rolodex.Rolodex;
-import org.kuali.coeus.common.framework.sponsor.Sponsor;
-import org.kuali.coeus.propdev.impl.attachment.Narrative;
+import org.kuali.coeus.common.api.rolodex.RolodexContract;
+import org.kuali.coeus.common.api.sponsor.SponsorContract;
 import org.kuali.coeus.propdev.impl.abstrct.ProposalAbstract;
+import org.kuali.coeus.propdev.impl.core.DevelopmentProposal;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentDocument;
 import org.kuali.coeus.propdev.impl.location.ProposalSite;
 import org.kuali.coeus.propdev.impl.person.ProposalPerson;
 import org.kuali.coeus.sys.api.model.ScaleTwoDecimal;
-import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.budget.core.Budget;
 import org.kuali.kra.budget.distributionincome.BudgetProjectIncome;
 import org.kuali.kra.budget.document.BudgetDocument;
 import org.kuali.kra.budget.nonpersonnel.BudgetLineItem;
 import org.kuali.kra.budget.nonpersonnel.BudgetLineItemCalculatedAmount;
 import org.kuali.kra.budget.parameters.BudgetPeriod;
-import org.kuali.kra.proposaldevelopment.bo.*;
-import org.kuali.kra.proposaldevelopment.budget.modular.BudgetModularIdc;
+import org.kuali.coeus.propdev.impl.budget.modular.BudgetModularIdc;
 import org.kuali.kra.s2s.S2SException;
 import org.kuali.coeus.propdev.impl.s2s.S2sOpportunity;
-import org.kuali.kra.s2s.depend.ArgValueLookupService;
+import org.kuali.coeus.propdev.api.attachment.NarrativeContract;
 import org.kuali.kra.s2s.generator.bo.DepartmentalPerson;
 import org.kuali.kra.s2s.util.S2SConstants;
 import org.kuali.rice.kew.api.exception.WorkflowException;
@@ -120,7 +117,7 @@ public class RRSF424V1_1Generator extends RRSF424BaseGenerator {
                 rrsf424.setEmployerID(applicantOrganization.getFedralEmployerId());
             }
         }
-		Sponsor sponsor = devProp.getSponsor();
+		SponsorContract sponsor = devProp.getSponsor();
 		if (sponsor != null) {
 			rrsf424.setFederalAgencyName(sponsor.getSponsorName());
 		}
@@ -160,9 +157,9 @@ public class RRSF424V1_1Generator extends RRSF424BaseGenerator {
         // Value is hardcoded
         rrsf424.setTrustAgree(YesNoDataType.Y_YES);
         rrsf424.setAORInfo(getAORInfoType());
-        for (Narrative narrative : devProp.getNarratives()) {
+        for (NarrativeContract narrative : devProp.getNarratives()) {
             AttachedFileDataType attachedFileDataType=null;
-            switch(Integer.parseInt(narrative.getNarrativeTypeCode())){
+            switch(Integer.parseInt(narrative.getNarrativeType().getCode())){
                 case(PRE_APPLICATION):
                     attachedFileDataType = getAttachedFileType(narrative);
                     if(attachedFileDataType!=null) {
@@ -305,7 +302,7 @@ public class RRSF424V1_1Generator extends RRSF424BaseGenerator {
 		}
 		OrganizationDataType orgType = OrganizationDataType.Factory
 				.newInstance();
-		Rolodex rolodex = pdDoc.getDevelopmentProposal()
+        RolodexContract rolodex = pdDoc.getDevelopmentProposal()
 				.getApplicantOrganization().getOrganization().getRolodex();
 		orgType.setAddress(globLibV20Generator.getAddressDataType(rolodex));
 		Organization organization = pdDoc.getDevelopmentProposal()
@@ -341,7 +338,7 @@ public class RRSF424V1_1Generator extends RRSF424BaseGenerator {
 	 * @param rolodex(Rolodex)
 	 * @return ContactPersonInfo corresponding to the Rolodex object.
 	 */
-	private ContactPersonInfo getContactInfo(Rolodex rolodex) {
+	private ContactPersonInfo getContactInfo(RolodexContract rolodex) {
 		ContactPersonInfo contactInfo = ContactPersonInfo.Factory.newInstance();
 		contactInfo.setName(globLibV20Generator.getHumanNameDataType(rolodex));
 		contactInfo.setPhone("");
@@ -439,23 +436,7 @@ public class RRSF424V1_1Generator extends RRSF424BaseGenerator {
         }
 
         if (answer != null && answer.equals(YesNoDataType.Y_YES)) {
-            String answerExplanation = getAnswer(ANSWER_111);
-            if (answerExplanation != null) {
-                Collection<ArgValueLookup> argDescription = KcServiceLocator.getService(ArgValueLookupService.class).findAllArgValueLookups();
-                if (argDescription != null) {
-                    for (ArgValueLookup argValue : argDescription) {
-                        if (argValue.getValue().equals(answerExplanation)) {
-                            String description = argValue.getDescription();
-                            String submissionExplanation = description.substring(5);
-                            if (submissionExplanation.length() > ANSWER_EXPLANATION_MAX_LENGTH) {
-                                applicationType.setOtherAgencySubmissionExplanation(submissionExplanation.substring(0, ANSWER_EXPLANATION_MAX_LENGTH));
-                            } else {
-                                applicationType.setOtherAgencySubmissionExplanation(submissionExplanation);  
-                            }
-                        }
-                    }
-                }
-            }
+            applicationType.setOtherAgencySubmissionExplanation(getOtherAgencySubmissionExplanation());
         }
 		return applicationType;
 	}

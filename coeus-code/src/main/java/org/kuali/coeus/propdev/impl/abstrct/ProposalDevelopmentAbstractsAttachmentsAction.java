@@ -24,21 +24,18 @@ import org.apache.struts.action.ActionMapping;
 import org.kuali.coeus.propdev.impl.attachment.Narrative;
 import org.kuali.coeus.propdev.impl.attachment.*;
 import org.kuali.coeus.propdev.impl.attachment.institute.AddInstituteAttachmentEvent;
+import org.kuali.coeus.propdev.impl.attachment.institute.ReplaceInstituteAttachmentEvent;
 import org.kuali.coeus.propdev.impl.attachment.institute.SaveInstituteAttachmentsEvent;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentAction;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentDocument;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentForm;
-import org.kuali.coeus.propdev.impl.person.attachment.AddPersonnelAttachmentEvent;
-import org.kuali.coeus.propdev.impl.person.attachment.ProposalPersonBiography;
-import org.kuali.coeus.propdev.impl.person.attachment.ProposalPersonBiographyAttachment;
-import org.kuali.coeus.propdev.impl.person.attachment.SavePersonnelAttachmentEvent;
+import org.kuali.coeus.propdev.impl.person.attachment.*;
 import org.kuali.coeus.sys.framework.controller.StrutsConfirmation;
 import org.kuali.kra.infrastructure.Constants;
 import org.kuali.kra.infrastructure.KeyConstants;
 import org.kuali.coeus.propdev.impl.notification.ProposalDevelopmentNotificationContext;
 import org.kuali.coeus.propdev.impl.notification.ProposalDevelopmentNotificationRenderer;
-import org.kuali.kra.proposaldevelopment.rule.event.*;
-import org.kuali.kra.proposaldevelopment.service.NarrativeService;
+import org.kuali.coeus.propdev.impl.attachment.LegacyNarrativeService;
 import org.kuali.coeus.propdev.impl.person.attachment.ProposalPersonBiographyService;
 import org.kuali.rice.core.api.CoreApiServiceLocator;
 import org.kuali.rice.core.api.datetime.DateTimeService;
@@ -128,7 +125,7 @@ public class ProposalDevelopmentAbstractsAttachmentsAction extends ProposalDevel
         ActionForward actionForward = super.execute(mapping, form, request, response); 
         ProposalDevelopmentDocument doc = (ProposalDevelopmentDocument)((ProposalDevelopmentForm)form).getDocument();
         getService(ProposalPersonBiographyService.class).setPersonnelBioTimeStampUser(doc.getDevelopmentProposal().getPropPersonBios());
-        getService(NarrativeService.class).setNarrativeTimeStampUser(doc.getDevelopmentProposal());
+        getService(LegacyNarrativeService.class).setNarrativeTimeStampUser(doc.getDevelopmentProposal());
         getService(ProposalAbstractsService.class).loadAbstractsUploadUserFullName(doc.getDevelopmentProposal().getProposalAbstracts());
         return actionForward;
     }    
@@ -177,8 +174,8 @@ public class ProposalDevelopmentAbstractsAttachmentsAction extends ProposalDevel
         ProposalDevelopmentDocument pd = proposalDevelopmentForm.getProposalDevelopmentDocument();
         Narrative narrative = pd.getDevelopmentProposal().getInstituteAttachments().get(lineNumber);
         NarrativeAttachment narrativeAttachment = findNarrativeAttachment(narrative);
-        if(narrativeAttachment==null && !narrative.getNarrativeAttachmentList().isEmpty()){//get it from the memory
-            narrativeAttachment = narrative.getNarrativeAttachmentList().get(0);
+        if(narrativeAttachment==null) {
+            narrativeAttachment = narrative.getNarrativeAttachment();
         }
         streamToResponse(narrativeAttachment,response); 
         return null;
@@ -202,8 +199,8 @@ public class ProposalDevelopmentAbstractsAttachmentsAction extends ProposalDevel
         ProposalDevelopmentDocument pd = proposalDevelopmentForm.getProposalDevelopmentDocument();
         Narrative narrative = pd.getDevelopmentProposal().getNarratives().get(lineNumber);
         NarrativeAttachment narrativeAttachment = findNarrativeAttachment(narrative);
-        if(narrativeAttachment==null && !narrative.getNarrativeAttachmentList().isEmpty()){//get it from the memory
-            narrativeAttachment = narrative.getNarrativeAttachmentList().get(0);
+        if(narrativeAttachment==null){
+            narrativeAttachment = narrative.getNarrativeAttachment();
         }
         streamToResponse(narrativeAttachment,response);
         return null;
@@ -639,15 +636,15 @@ public class ProposalDevelopmentAbstractsAttachmentsAction extends ProposalDevel
         String fileName = null;
         if (CONFIRM_DELETE_INSTITUTIONAL_ATTACHMENT_KEY.equals(questionId)) {
             description = INSTITUTIONAL_ATTACHMENT_TYPE_NAME;
-            fileName = doc.getDevelopmentProposal().getInstituteAttachment(getLineToDelete(request)).getFileName();
+            fileName = doc.getDevelopmentProposal().getInstituteAttachment(getLineToDelete(request)).getName();
         }
         else if (CONFIRM_DELETE_PERSONNEL_ATTACHMENT_KEY.equals(questionId)) {
             description = PERSONNEL_ATTACHMENT_TYPE_NAME;
-            fileName = doc.getDevelopmentProposal().getPropPersonBio(getLineToDelete(request)).getFileName();
+            fileName = doc.getDevelopmentProposal().getPropPersonBio(getLineToDelete(request)).getName();
         }
         else if (CONFIRM_DELETE_PROPOSAL_ATTACHMENT_KEY.equals(questionId)) {
             description = PROPOSAL_ATTACHMENT_TYPE_NAME;
-            fileName = doc.getDevelopmentProposal().getNarrative(getLineToDelete(request)).getFileName();
+            fileName = doc.getDevelopmentProposal().getNarrative(getLineToDelete(request)).getName();
         }
         return buildParameterizedConfirmationQuestion(mapping, form, request, response, questionId, QUESTION_DELETE_ATTACHMENT_CONFIRMATION, description, fileName);
     }
@@ -750,8 +747,8 @@ public class ProposalDevelopmentAbstractsAttachmentsAction extends ProposalDevel
         propPersonBioAttVal.put(BIOGRAPHY_NUMBER, propPersonBio.getBiographyNumber()+"");
         propPersonBioAttVal.put(PROPOSAL_PERSON_NUMBER, propPersonBio.getProposalPersonNumber()+"");
         ProposalPersonBiographyAttachment propPersonBioAttachment = (ProposalPersonBiographyAttachment)getBusinessObjectService().findByPrimaryKey(ProposalPersonBiographyAttachment.class, propPersonBioAttVal);
-        if(propPersonBioAttachment==null && !propPersonBio.getPersonnelAttachmentList().isEmpty()){//get it from the memory
-            propPersonBioAttachment = propPersonBio.getPersonnelAttachmentList().get(0);
+        if(propPersonBioAttachment==null){
+            propPersonBioAttachment = propPersonBio.getPersonnelAttachment();
         }
         streamToResponse(propPersonBioAttachment,response);
         return  null;
@@ -833,8 +830,8 @@ public class ProposalDevelopmentAbstractsAttachmentsAction extends ProposalDevel
           int lineNumber = line == null ? 0 : Integer.parseInt(line);
           Narrative narrative = pd.getDevelopmentProposal().getInstituteAttachments().get(lineNumber);
           NarrativeAttachment narrativeAttachment = findNarrativeAttachment(narrative);
-          if(narrativeAttachment==null && !narrative.getNarrativeAttachmentList().isEmpty()){//get it from the memory
-              narrativeAttachment = narrative.getNarrativeAttachmentList().get(0);
+          if(narrativeAttachment==null){
+              narrativeAttachment = narrative.getNarrativeAttachment();
           }
           streamToResponse(narrativeAttachment,response);
           return null;

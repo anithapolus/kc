@@ -19,6 +19,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentDocument;
+import org.kuali.coeus.propdev.impl.person.attachment.ProposalDevelopmentPersonnelAttachmentRule;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.bo.PropPerDocType;
 import org.kuali.kra.infrastructure.KeyConstants;
@@ -86,7 +87,7 @@ public class ProposalDevelopmentPersonnelAttachmentRuleTest extends ProposalDeve
      */
     @Test
     public void testFileNameRequired() throws Exception {
-        newProposalPersonBiography.setFileName(null);
+        newProposalPersonBiography.setName(null);
         
         assertFalse(rule.processAddPersonnelAttachmentBusinessRules(createAddPersonnelAttachmentEvent()));
         
@@ -140,8 +141,7 @@ public class ProposalDevelopmentPersonnelAttachmentRuleTest extends ProposalDeve
     /**
      * This method does what its name says
      * @param errorPathContext
-     * @param expectedErrorCount
-     * @param errorKeys
+     * @param errorKey
      */
     private void checkErrorCountAndContent(String errorPathContext, String errorKey) {
         List errors = GlobalVariables.getMessageMap().getMessages(ProposalDevelopmentPersonnelAttachmentRule.buildErrorPath(errorPathContext));
@@ -170,7 +170,7 @@ public class ProposalDevelopmentPersonnelAttachmentRuleTest extends ProposalDeve
         ProposalPersonBiography proposalPersonBiography = new ProposalPersonBiography();
         proposalPersonBiography.setDocumentTypeCode(documentTypes.get(1).getDocumentTypeCode());
         proposalPersonBiography.setDescription("description");
-        proposalPersonBiography.setFileName("test.dat");
+        proposalPersonBiography.setName("test.dat");
         proposalPersonBiography.setProposalPersonNumber(new Integer(2));
         return proposalPersonBiography;
     }

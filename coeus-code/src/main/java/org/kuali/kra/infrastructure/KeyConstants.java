@@ -416,8 +416,8 @@ public final class KeyConstants {
     //Award Approved Subaward
     public static final String ERROR_AMOUNT_IS_ZERO = "error.awardApprovedSubaward.Amount.equals.zero";
     public static final String ERROR_DUPLICATE_ORGANIZATION_NAME = "error.awardApprovedSubaward.duplicate.organization.name";
-    public static final String ERROR_ORGANIZATION_NAME_IS_NULL = "error.awardApprovedSubaward.organization.is.null";
-    public static final String ERROR_ORGANIZATION_NAME_IS_INVALID = "error.awardApprovedSubaward.invalid.organization.name";
+    public static final String ERROR_ORGANIZATION_ID_IS_NULL = "error.awardApprovedSubaward.organization.is.null";
+    public static final String ERROR_ORGANIZATION_ID_IS_INVALID = "error.awardApprovedSubaward.invalid.organization.name";
     //Award Cost Share Confirmation Questions
     public static final String QUESTION_DELETE_COST_SHARE = "document.question.deleteCostShare.text";
     
@@ -986,6 +986,12 @@ public final class KeyConstants {
     public static final String SUBAWARD_ATTACHMENT_FILE_REQUIRED = "error.Subaward.attachment.fileRequired";
     public static final String SUBAWARD_ATTACHMENT_DESCRIPTION_REQUIRED = "error.Subaward.attachment.descriptionRequired";
     public static final String ERROR_REQUIRED_SUBAWARD_REPORT_TYPE_CODE = "error.required.subaward.report.type.code";
+    public static final String ERROR_CONTACT_TYPE_CODE_FOREIGN_KEY_EXISTS = "error.contact.type.code.foreign.key.exists";
+    public static final String ERROR_CONTACT_TYPE_NOT_EXISTS = "error.contact.type.not.exists";
+    public static final String ERROR_MODULE_NOT_EXISTS = "error.module.not.exists";
+    public static final String ERROR_CONTACT_TYPE_MODULE_EXISTS = "error.contacttypemodule.exists";
+    public static final String ERROR_REQUIRED_SUBAWARD_PRINT_FUNDING = "error.required.subaward.print.funding";
+    
     //negotiations
     public static final String NEGOTIATION_STATUS_USED = "error.negotiations.codeAlreadyUsed";
     public static final String NEGOTIATION_CHANGE_ASSOCIATION_TYPE_MESSAGE="negotiation.message.changeAssociationType";
@@ -1080,6 +1086,11 @@ public final class KeyConstants {
     public static final String REPORT_INPUT_PARAMETER_MISSING = "error.missing.report.inputparameters";
 
     public static final String ERROR_SEARCH_INVALID_DATE = "error.search.invalid.date";
+    public static final String S2S_DUPLICATE_USER_ATTACHED_FORM = "error.s2s.userattachedform.namespace.duplicate";
+    public static final String S2S_USER_ATTACHED_FORM_EMPTY = "error.s2s.userattachedform.file.empty";
+    public static final String S2S_USER_ATTACHED_FORM_WRONG_FILE_TYPE = "error.s2s.userattachedform.wrong.filetype";
+    public static final String S2S_USER_ATTACHED_FORM_NOT_VALID = "error.s2s.userattachedform.invalid";
+    public static final String S2S_USER_ATTACHED_FORM_NOT_PDF = "error.s2s.userattachedform.not.pdf";
 
     /**
      * private utility class ctor.

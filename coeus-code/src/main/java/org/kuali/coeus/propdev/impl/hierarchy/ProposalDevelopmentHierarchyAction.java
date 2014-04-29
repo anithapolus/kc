@@ -26,10 +26,8 @@ import org.kuali.kra.budget.calculator.BudgetCalculationService;
 import org.kuali.kra.budget.core.Budget;
 import org.kuali.kra.budget.document.BudgetDocument;
 import org.kuali.kra.infrastructure.Constants;
-import org.kuali.kra.proposaldevelopment.bo.DevelopmentProposal;
-import org.kuali.kra.proposaldevelopment.budget.bo.ProposalDevelopmentBudgetExt;
-import org.kuali.kra.proposaldevelopment.hierarchy.service.ProposalHierarchyService;
-import org.kuali.rice.krad.bo.BusinessObject;
+import org.kuali.coeus.propdev.impl.core.DevelopmentProposal;
+import org.kuali.coeus.propdev.impl.budget.ProposalDevelopmentBudgetExt;
 import org.kuali.rice.krad.service.BusinessObjectService;
 
 import javax.servlet.http.HttpServletRequest;

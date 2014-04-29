@@ -23,6 +23,11 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.upload.FormFile;
 import org.kuali.coeus.common.framework.attachment.KcAttachmentService;
+import org.kuali.coeus.propdev.impl.budget.ProposalDevelopmentBudgetExt;
+import org.kuali.coeus.propdev.impl.budget.subaward.BudgetSubAwardFiles;
+import org.kuali.coeus.propdev.impl.budget.subaward.BudgetSubAwardPeriodDetail;
+import org.kuali.coeus.propdev.impl.budget.subaward.BudgetSubAwards;
+import org.kuali.coeus.propdev.impl.budget.subaward.BudgetSubAwardsRule;
 import org.kuali.coeus.sys.framework.controller.AuditActionHelper;
 import org.kuali.coeus.sys.framework.controller.AuditActionHelper.ValidationState;
 import org.kuali.coeus.sys.framework.controller.StrutsConfirmation;
@@ -47,10 +52,9 @@ import org.kuali.kra.budget.external.budget.BudgetAdjustmentClient;
 import org.kuali.kra.infrastructure.Constants;
 import org.kuali.kra.infrastructure.KeyConstants;
 import org.kuali.coeus.common.framework.print.AttachmentDataSource;
-import org.kuali.kra.proposaldevelopment.bo.DevelopmentProposal;
-import org.kuali.kra.proposaldevelopment.budget.bo.*;
-import org.kuali.kra.proposaldevelopment.budget.service.BudgetPrintService;
-import org.kuali.kra.proposaldevelopment.budget.service.BudgetSubAwardService;
+import org.kuali.coeus.propdev.impl.core.DevelopmentProposal;
+import org.kuali.coeus.propdev.impl.budget.print.BudgetPrintService;
+import org.kuali.coeus.propdev.impl.budget.subaward.BudgetSubAwardService;
 import org.kuali.coeus.propdev.impl.hierarchy.ProposalHierarchyKeyConstants;
 import org.kuali.rice.core.api.CoreApiServiceLocator;
 import org.kuali.rice.core.api.config.property.ConfigurationService;
@@ -361,7 +365,7 @@ public class BudgetActionsAction extends BudgetAction implements AuditModeAction
         ActionForward forward = mapping.findForward(MAPPING_BASIC);
         if (budgetFormToPrint != null) {
                 AttachmentDataSource dataStream = budgetPrintService.readBudgetPrintStream(budget,budgetFormToPrint);
-                if(dataStream.getContent()!=null){
+                if(dataStream.getData()!=null){
                     streamToResponse(dataStream, response);
                     forward = null;
                 }

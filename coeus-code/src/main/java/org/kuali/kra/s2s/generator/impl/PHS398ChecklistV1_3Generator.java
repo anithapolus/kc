@@ -25,13 +25,13 @@ import gov.grants.apply.system.globalLibraryV20.YesNoDataType.Enum;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xmlbeans.XmlObject;
-import org.kuali.coeus.common.framework.rolodex.Rolodex;
-import org.kuali.coeus.common.framework.rolodex.RolodexService;
+import org.kuali.coeus.common.api.rolodex.RolodexContract;
+import org.kuali.coeus.common.api.rolodex.RolodexService;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentDocument;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.budget.distributionincome.BudgetProjectIncome;
 import org.kuali.kra.budget.document.BudgetDocument;
-import org.kuali.kra.proposaldevelopment.bo.DevelopmentProposal;
+import org.kuali.coeus.propdev.impl.core.DevelopmentProposal;
 import org.kuali.kra.questionnaire.answer.Answer;
 import org.kuali.kra.questionnaire.answer.AnswerHeader;
 import org.kuali.kra.s2s.util.S2SConstants;
@@ -249,7 +249,7 @@ public class PHS398ChecklistV1_3Generator extends PHS398ChecklistBaseGenerator {
             phsChecklist.setIsChangeOfPDPI(YesNoDataType.Y_YES);
             if (explanation != null) {
                 RolodexService rolodexService = KcServiceLocator.getService(RolodexService.class);
-                Rolodex rolodex = rolodexService.getRolodex(Integer.valueOf(explanation));
+                RolodexContract rolodex = rolodexService.getRolodex(Integer.valueOf(explanation));
                 HumanNameDataType formerPDName = globLibV20Generator
                         .getHumanNameDataType(rolodex);
                 if (formerPDName != null

@@ -32,29 +32,25 @@ import gov.grants.apply.system.universalCodesV20.CountryCodeDataType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xmlbeans.XmlObject;
-import org.kuali.coeus.common.framework.custom.arg.ArgValueLookup;
 import org.kuali.coeus.common.framework.org.Organization;
 import org.kuali.coeus.common.framework.person.KcPerson;
-import org.kuali.coeus.common.framework.rolodex.Rolodex;
-import org.kuali.coeus.common.framework.sponsor.Sponsor;
-import org.kuali.coeus.propdev.impl.attachment.Narrative;
+import org.kuali.coeus.common.api.rolodex.RolodexContract;
+import org.kuali.coeus.common.api.sponsor.SponsorContract;
+import org.kuali.coeus.propdev.impl.core.DevelopmentProposal;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentDocument;
 import org.kuali.coeus.propdev.impl.location.ProposalSite;
 import org.kuali.coeus.propdev.impl.person.ProposalPerson;
-import org.kuali.coeus.propdev.impl.ynq.ProposalYnq;
 import org.kuali.coeus.sys.api.model.ScaleTwoDecimal;
-import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.budget.core.Budget;
 import org.kuali.kra.budget.distributionincome.BudgetProjectIncome;
 import org.kuali.kra.budget.document.BudgetDocument;
 import org.kuali.kra.budget.nonpersonnel.BudgetLineItem;
 import org.kuali.kra.budget.nonpersonnel.BudgetLineItemCalculatedAmount;
 import org.kuali.kra.budget.parameters.BudgetPeriod;
-import org.kuali.kra.proposaldevelopment.bo.*;
-import org.kuali.kra.proposaldevelopment.budget.modular.BudgetModularIdc;
+import org.kuali.coeus.propdev.impl.budget.modular.BudgetModularIdc;
 import org.kuali.kra.s2s.S2SException;
 import org.kuali.coeus.propdev.impl.s2s.S2sOpportunity;
-import org.kuali.kra.s2s.depend.ArgValueLookupService;
+import org.kuali.coeus.propdev.api.attachment.NarrativeContract;
 import org.kuali.kra.s2s.generator.bo.DepartmentalPerson;
 import org.kuali.kra.s2s.generator.impl.RRSF424BaseGenerator;
 import org.kuali.kra.s2s.util.S2SConstants;
@@ -264,7 +260,7 @@ public class RRSF424_2_0_V2Generator extends RRSF424BaseGenerator {
 	private OrganizationDataType getOrganizationDataType() {
 		OrganizationDataType orgType = OrganizationDataType.Factory
 				.newInstance();
-		Rolodex rolodex = pdDoc.getDevelopmentProposal()
+        RolodexContract rolodex = pdDoc.getDevelopmentProposal()
 				.getApplicantOrganization().getOrganization().getRolodex();
 		orgType.setAddress(globLibV20Generator.getAddressDataType(rolodex));
 
@@ -300,7 +296,7 @@ public class RRSF424_2_0_V2Generator extends RRSF424BaseGenerator {
 	 * @param rolodex(Rolodex)
 	 * @return ContactPersonInfo corresponding to the Rolodex object.
 	 */
-	private ContactPersonInfo getContactInfo(Rolodex rolodex) {
+	private ContactPersonInfo getContactInfo(RolodexContract rolodex) {
 		ContactPersonInfo contactInfo = ContactPersonInfo.Factory.newInstance();
 		contactInfo.setName(globLibV20Generator.getHumanNameDataType(rolodex));
 		contactInfo.setPhone("");
@@ -403,23 +399,7 @@ public class RRSF424_2_0_V2Generator extends RRSF424BaseGenerator {
 	    }
 
 	    if (answer !=null && answer.equals(YesNoDataType.Y_YES)) {
-	        String answerExplanation = getAnswer(ANSWER_111);
-	        if (answerExplanation != null) {
-	            Collection<ArgValueLookup> argDescription = KcServiceLocator.getService(ArgValueLookupService.class).findAllArgValueLookups();
-	            if (argDescription != null) {
-	                for (ArgValueLookup argValue : argDescription) {
-	                    if (argValue.getValue().equals(answerExplanation)) {
-	                        String description = argValue.getDescription();
-	                        String submissionExplanation = description.substring(5);
-	                        if (submissionExplanation.length() > ANSWER_EXPLANATION_MAX_LENGTH) {
-	                            applicationType.setOtherAgencySubmissionExplanation(submissionExplanation.substring(0, ANSWER_EXPLANATION_MAX_LENGTH));
-	                        } else {
-	                            applicationType.setOtherAgencySubmissionExplanation(submissionExplanation);  
-	                        }
-	                    }
-	                }
-	            }
-	        }
+            applicationType.setOtherAgencySubmissionExplanation(getOtherAgencySubmissionExplanation());
 	    }
 	}
 
@@ -745,22 +725,6 @@ public class RRSF424_2_0_V2Generator extends RRSF424BaseGenerator {
 		return applicantType;
 	}
 
-	private ProposalYnq getAnswer(String questionId,
-			ProposalDevelopmentDocument proposalDevelopmentDocument) {
-		String question;
-		ProposalYnq ynq = null;
-		for (ProposalYnq proposalYnq : proposalDevelopmentDocument
-				.getDevelopmentProposal().getProposalYnqs()) {
-			question = proposalYnq.getQuestionId();
-
-			if (question != null && question.equals(questionId)) {
-				ynq = proposalYnq;
-				break;
-			}
-		}
-		return ynq;
-	}
-
 	private String getSubmissionTypeCode() {
 		String submissionTypeCode = null;
 		S2sOpportunity s2sOpportunity = pdDoc.getDevelopmentProposal()
@@ -775,7 +739,7 @@ public class RRSF424_2_0_V2Generator extends RRSF424BaseGenerator {
 
 	private String getRolodexState() {
 		String state = "";
-		Rolodex rolodex = pdDoc.getDevelopmentProposal()
+        RolodexContract rolodex = pdDoc.getDevelopmentProposal()
 				.getApplicantOrganization().getOrganization().getRolodex();
 		if (rolodex != null) {
 			state = rolodex.getState();
@@ -804,7 +768,7 @@ public class RRSF424_2_0_V2Generator extends RRSF424BaseGenerator {
 
 	private String getFederalAgencyName() {
 		String agencyName = "";
-		Sponsor sponsor = pdDoc.getDevelopmentProposal().getSponsor();
+		SponsorContract sponsor = pdDoc.getDevelopmentProposal().getSponsor();
 		if (sponsor != null) {
 			agencyName = sponsor.getSponsorName();
 		}
@@ -812,10 +776,10 @@ public class RRSF424_2_0_V2Generator extends RRSF424BaseGenerator {
 	}
 
 	private void setPreApplicationAttachment(RRSF42420 rrsf42420) {
-		for (Narrative narrative : pdDoc.getDevelopmentProposal()
+		for (NarrativeContract narrative : pdDoc.getDevelopmentProposal()
 				.getNarratives()) {
-			if (narrative.getNarrativeTypeCode() != null
-					&& Integer.parseInt(narrative.getNarrativeTypeCode()) == PRE_APPLICATION) {
+			if (narrative.getNarrativeType().getCode() != null
+					&& Integer.parseInt(narrative.getNarrativeType().getCode()) == PRE_APPLICATION) {
 				AttachedFileDataType preAttachment = getAttachedFileType(narrative);
 				if(preAttachment != null){
 				    rrsf42420.setPreApplicationAttachment(preAttachment);
@@ -825,10 +789,10 @@ public class RRSF424_2_0_V2Generator extends RRSF424BaseGenerator {
 		}
 	}
 	private void setSFLLLAttachment(RRSF42420 rrsf42420) {
-		for (Narrative narrative : pdDoc.getDevelopmentProposal()
+		for (NarrativeContract narrative : pdDoc.getDevelopmentProposal()
 				.getNarratives()) {
-			if (narrative.getNarrativeTypeCode() != null
-					&& Integer.parseInt(narrative.getNarrativeTypeCode()) == SFLLL_OTHEREXPLANATORY) {
+			if (narrative.getNarrativeType().getCode() != null
+					&& Integer.parseInt(narrative.getNarrativeType().getCode()) == SFLLL_OTHEREXPLANATORY) {
 				AttachedFileDataType preAttachment = getAttachedFileType(narrative);
 				if(preAttachment != null){
 				    rrsf42420.setSFLLLAttachment(preAttachment);
@@ -839,10 +803,10 @@ public class RRSF424_2_0_V2Generator extends RRSF424BaseGenerator {
 	}
 	
 	private void setCoverLetterAttachment (RRSF42420 rrsf42420) {
-        for (Narrative narrative : pdDoc.getDevelopmentProposal()
+        for (NarrativeContract narrative : pdDoc.getDevelopmentProposal()
                 .getNarratives()) {
-            if (narrative.getNarrativeTypeCode() != null
-                    && Integer.parseInt(narrative.getNarrativeTypeCode()) == RRSF424_Cover_Letter) {
+            if (narrative.getNarrativeType().getCode() != null
+                    && Integer.parseInt(narrative.getNarrativeType().getCode()) == RRSF424_Cover_Letter) {
                 AttachedFileDataType preAttachment = getAttachedFileType(narrative);
                 if(preAttachment != null){
                     rrsf42420.setCoverLetterAttachment(preAttachment);

@@ -51,11 +51,11 @@ import org.kuali.kra.budget.web.struts.form.BudgetForm;
 import org.kuali.kra.infrastructure.Constants;
 import org.kuali.kra.infrastructure.KeyConstants;
 import org.kuali.coeus.common.framework.print.AttachmentDataSource;
-import org.kuali.kra.proposaldevelopment.bo.DevelopmentProposal;
-import org.kuali.kra.proposaldevelopment.budget.modular.BudgetModularService;
-import org.kuali.kra.proposaldevelopment.budget.service.BudgetPrintService;
-import org.kuali.kra.proposaldevelopment.budget.service.BudgetSubAwardService;
-import org.kuali.kra.proposaldevelopment.hierarchy.ProposalHierarcyActionHelper;
+import org.kuali.coeus.propdev.impl.core.DevelopmentProposal;
+import org.kuali.coeus.propdev.impl.budget.modular.BudgetModularService;
+import org.kuali.coeus.propdev.impl.budget.print.BudgetPrintService;
+import org.kuali.coeus.propdev.impl.budget.subaward.BudgetSubAwardService;
+import org.kuali.coeus.propdev.impl.hierarchy.ProposalHierarcyActionHelper;
 import org.kuali.rice.core.api.util.KeyValue;
 import org.kuali.rice.coreservice.framework.parameter.ParameterService;
 import org.kuali.rice.kew.api.KewApiConstants;
@@ -177,7 +177,6 @@ public class BudgetAction extends BudgetActionBase {
     
     /**
      * Need to suppress buttons here when 'Totals' tab is clicked.
-     * @see org.kuali.core.web.struts.action.KualiDocumentActionBase#execute(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     @Override
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -661,7 +660,7 @@ public class BudgetAction extends BudgetActionBase {
      * @throws Exception
      */
     public void streamToResponse(AttachmentDataSource attachmentDataSource,HttpServletResponse response) throws Exception{
-        byte[] xbts = attachmentDataSource.getContent();
+        byte[] xbts = attachmentDataSource.getData();
         
         ByteArrayOutputStream baos = null;
         if(xbts!=null)
@@ -669,7 +668,7 @@ public class BudgetAction extends BudgetActionBase {
             baos = new ByteArrayOutputStream(xbts.length);
             baos.write(xbts);
             
-            WebUtils.saveMimeOutputStreamAsFile(response, attachmentDataSource.getContentType(), baos, attachmentDataSource.getFileName());
+            WebUtils.saveMimeOutputStreamAsFile(response, attachmentDataSource.getType(), baos, attachmentDataSource.getName());
         }finally{
             try{
                 if(baos!=null){

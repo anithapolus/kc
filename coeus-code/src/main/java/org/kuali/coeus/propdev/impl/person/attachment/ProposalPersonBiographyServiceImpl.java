@@ -21,10 +21,7 @@ import org.kuali.kra.bo.DocumentNextvalue;
 import org.kuali.kra.bo.PropPerDocType;
 import org.kuali.kra.infrastructure.Constants;
 import org.kuali.coeus.propdev.impl.person.ProposalPerson;
-import org.kuali.coeus.propdev.impl.person.attachment.ProposalPersonBiography;
-import org.kuali.coeus.propdev.impl.person.attachment.ProposalPersonBiographyAttachment;
-import org.kuali.kra.proposaldevelopment.dao.AttachmentDao;
-import org.kuali.coeus.propdev.impl.person.attachment.ProposalPersonBiographyService;
+import org.kuali.coeus.propdev.impl.attachment.AttachmentDao;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.identity.PersonService;
 import org.kuali.rice.krad.bo.PersistableBusinessObject;
@@ -81,30 +78,27 @@ public class ProposalPersonBiographyServiceImpl implements ProposalPersonBiograp
                 byte[] fileData = personnelAttachmentFile.getFileData();
                 if (fileData.length > 0) {
                     ProposalPersonBiographyAttachment personnelAttachment = new ProposalPersonBiographyAttachment();
-                    personnelAttachment.setFileName(personnelAttachmentFile.getFileName());
+                    personnelAttachment.setName(personnelAttachmentFile.getFileName());
                     personnelAttachment.setProposalNumber(proposalPersonBiography.getProposalNumber());
                     personnelAttachment.setProposalPersonNumber(proposalPersonBiography.getProposalPersonNumber());
-                    personnelAttachment.setBiographyData(personnelAttachmentFile.getFileData());
-                    personnelAttachment.setContentType(personnelAttachmentFile.getContentType());
-                    proposalPersonBiography.setFileName(personnelAttachmentFile.getFileName());
-                    proposalPersonBiography.setContentType(personnelAttachmentFile.getContentType());
-                    if (proposalPersonBiography.getPersonnelAttachmentList().isEmpty())
-                        proposalPersonBiography.getPersonnelAttachmentList().add(personnelAttachment);
-                    else
-                        proposalPersonBiography.getPersonnelAttachmentList().set(0, personnelAttachment);
+                    personnelAttachment.setData(personnelAttachmentFile.getFileData());
+                    personnelAttachment.setType(personnelAttachmentFile.getContentType());
+                    proposalPersonBiography.setName(personnelAttachmentFile.getFileName());
+                    proposalPersonBiography.setType(personnelAttachmentFile.getContentType());
+
+                    proposalPersonBiography.setPersonnelAttachment(personnelAttachment);
                 }
             }
             catch (Exception e) {
-                proposalPersonBiography.getPersonnelAttachmentList().clear();
+                proposalPersonBiography.setPersonnelAttachment(null);
             }
         }
         DocumentNextvalue documentNextvalue = proposaldevelopmentDocument.getDocumentNextvalueBo(Constants.PROP_PERSON_BIO_NUMBER);
-//        documentNextvalue.setDocumentKey(proposaldevelopmentDocument.getDevelopmentProposal().getProposalNumber());
         List<PersistableBusinessObject> businessObjects = new ArrayList<PersistableBusinessObject>();
         businessObjects.add(documentNextvalue);
         businessObjects.add(proposalPersonBiography);
         getBusinessObjectService().save(businessObjects);
-        proposalPersonBiography.getPersonnelAttachmentList().clear();
+        proposalPersonBiography.setPersonnelAttachment(null);
         proposaldevelopmentDocument.getDevelopmentProposal().getPropPersonBios().add(proposalPersonBiography);
 
     }

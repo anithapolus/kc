@@ -15,12 +15,12 @@
  */
 package org.kuali.kra.s2s.generator.impl;
 
-import org.kuali.coeus.common.framework.rolodex.Rolodex;
+import org.kuali.coeus.common.api.rolodex.RolodexContract;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.coeus.sys.api.model.ScaleTwoDecimal;
-import org.kuali.kra.proposaldevelopment.budget.modular.BudgetModular;
-import org.kuali.kra.proposaldevelopment.budget.modular.BudgetModularIdc;
-import org.kuali.kra.proposaldevelopment.budget.service.ProposalBudgetService;
+import org.kuali.coeus.propdev.impl.budget.modular.BudgetModular;
+import org.kuali.coeus.propdev.impl.budget.modular.BudgetModularIdc;
+import org.kuali.coeus.propdev.impl.budget.ProposalBudgetService;
 import org.kuali.kra.s2s.generator.S2SBaseFormGenerator;
 import org.kuali.kra.s2s.service.S2SUtilService;
 
@@ -78,7 +78,7 @@ public abstract class PHS398ModularBudgetBaseGenerator extends
 	 * @param rolodex
 	 * @return String
 	 */
-	protected String getCognizantFederalAgency(Rolodex rolodex) {
+	protected String getCognizantFederalAgency(RolodexContract rolodex) {
 		StringBuilder agency = new StringBuilder();
 		if(rolodex.getOrganization()!=null){
 		agency.append(rolodex.getOrganization());

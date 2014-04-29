@@ -19,7 +19,7 @@ import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentDocument;
 import org.kuali.coeus.sys.api.model.ScaleTwoDecimal;
 import org.kuali.kra.budget.personnel.BudgetPersonnelDetails;
 import org.kuali.kra.infrastructure.CitizenshipTypes;
-import org.kuali.kra.proposaldevelopment.bo.DevelopmentProposal;
+import org.kuali.coeus.propdev.impl.core.DevelopmentProposal;
 import org.kuali.coeus.propdev.impl.person.ProposalPerson;
 import org.kuali.kra.questionnaire.answer.Answer;
 import org.kuali.kra.s2s.generator.bo.DepartmentalPerson;
@@ -205,13 +205,6 @@ public interface S2SUtilService {
      * @return depPerson(DepartmentalPerson) corresponding to the contact type.
      */
     public DepartmentalPerson getContactPerson(ProposalDevelopmentDocument pdDoc) ;
-    
-    /**
-     * 
-     * This method is used to delete all auto generated pdfs as part of s2s forms creation
-     * @param pdDoc
-     */
-    public void deleteSystemGeneratedAttachments(ProposalDevelopmentDocument pdDoc);
     
     public ScaleTwoDecimal getNumberOfMonths(Date dateStart, Date dateEnd);
 

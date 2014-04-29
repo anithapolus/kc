@@ -25,6 +25,7 @@ import org.kuali.coeus.propdev.impl.attachment.Narrative;
 import org.kuali.coeus.propdev.impl.attachment.NarrativeAttachment;
 import org.kuali.coeus.propdev.impl.attachment.NarrativeUserRights;
 import org.kuali.coeus.propdev.impl.abstrct.ProposalAbstract;
+import org.kuali.coeus.propdev.impl.core.DevelopmentProposal;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentDocument;
 import org.kuali.coeus.propdev.impl.location.CongressionalDistrict;
 import org.kuali.coeus.propdev.impl.location.ProposalSite;
@@ -34,6 +35,7 @@ import org.kuali.coeus.propdev.impl.person.ProposalPersonUnit;
 import org.kuali.coeus.propdev.impl.person.ProposalPersonYnq;
 import org.kuali.coeus.propdev.impl.person.attachment.ProposalPersonBiography;
 import org.kuali.coeus.propdev.impl.person.attachment.ProposalPersonBiographyAttachment;
+import org.kuali.coeus.propdev.impl.person.creditsplit.ProposalUnitCreditSplit;
 import org.kuali.coeus.sys.framework.auth.perm.KcAuthorizationService;
 import org.kuali.kra.bo.*;
 import org.kuali.kra.budget.core.Budget;
@@ -45,16 +47,17 @@ import org.kuali.kra.budget.versions.BudgetDocumentVersion;
 import org.kuali.kra.infrastructure.Constants;
 import org.kuali.kra.infrastructure.KeyConstants;
 import org.kuali.kra.infrastructure.RoleConstants;
-import org.kuali.kra.proposaldevelopment.bo.*;
-import org.kuali.kra.proposaldevelopment.budget.bo.BudgetSubAwardAttachment;
-import org.kuali.kra.proposaldevelopment.budget.bo.BudgetSubAwardFiles;
-import org.kuali.kra.proposaldevelopment.budget.bo.BudgetSubAwards;
-import org.kuali.kra.proposaldevelopment.budget.modular.BudgetModular;
+import org.kuali.coeus.propdev.impl.budget.subaward.BudgetSubAwardAttachment;
+import org.kuali.coeus.propdev.impl.budget.subaward.BudgetSubAwardFiles;
+import org.kuali.coeus.propdev.impl.budget.subaward.BudgetSubAwards;
+import org.kuali.coeus.propdev.impl.budget.modular.BudgetModular;
 import org.kuali.coeus.propdev.impl.hierarchy.HierarchyStatusConstants;
 import org.kuali.coeus.propdev.impl.question.ProposalDevelopmentModuleQuestionnaireBean;
+import org.kuali.coeus.propdev.impl.s2s.S2sUserAttachedForm;
+import org.kuali.coeus.propdev.impl.s2s.S2sUserAttachedFormAtt;
 import org.kuali.coeus.propdev.impl.s2s.question.ProposalDevelopmentS2sModuleQuestionnaireBean;
-import org.kuali.kra.proposaldevelopment.service.KeyPersonnelService;
-import org.kuali.kra.proposaldevelopment.service.NarrativeService;
+import org.kuali.coeus.propdev.impl.person.KeyPersonnelService;
+import org.kuali.coeus.propdev.impl.attachment.LegacyNarrativeService;
 import org.kuali.coeus.propdev.impl.person.attachment.ProposalPersonBiographyService;
 import org.kuali.kra.questionnaire.answer.AnswerHeader;
 import org.kuali.kra.questionnaire.answer.ModuleQuestionnaireBean;
@@ -534,6 +537,7 @@ public class ProposalCopyServiceImpl implements ProposalCopyService {
         fixProposalNumbers(newDoc, newDoc.getDevelopmentProposal().getProposalNumber(), list);
         fixKeyPersonnel(newDoc, srcDoc.getDevelopmentProposal().getOwnedByUnitNumber(), criteria.getLeadUnitNumber());
         fixCongressionalDistricts(newDoc);
+        fixS2sUserAttachedForms(newDoc);
         // reset organization / location info only if lead unit changed
         if (!StringUtils.equals(srcDoc.getDevelopmentProposal().getUnitNumber(), newDoc.getDevelopmentProposal().getUnitNumber())) {
             fixOrganizationAndLocations(newDoc);
@@ -550,6 +554,20 @@ public class ProposalCopyServiceImpl implements ProposalCopyService {
         for (ProposalAbstract curAbstract : newDoc.getDevelopmentProposal().getProposalAbstracts()) {
             curAbstract.setTimestampDisplay(getDateTimeService().getCurrentTimestamp());
         }
+    }
+
+    private void fixS2sUserAttachedForms(ProposalDevelopmentDocument newDoc) {
+        DevelopmentProposal developmentProposal = newDoc.getDevelopmentProposal();
+        List<S2sUserAttachedForm> userAttachedForms = developmentProposal.getS2sUserAttachedForms();
+        for (S2sUserAttachedForm s2sUserAttachedForm : userAttachedForms) {
+            s2sUserAttachedForm.refresh();
+            s2sUserAttachedForm.setS2sUserAttachedFormId(null);
+            List<S2sUserAttachedFormAtt> attachments = s2sUserAttachedForm.getS2sUserAttachedFormAtts();
+            for (S2sUserAttachedFormAtt s2sUserAttachedFormAtt : attachments) {
+                s2sUserAttachedFormAtt.setS2sUserAttachedFormAttId(null);
+            }
+        }
+        
     }
 
     /**
@@ -661,8 +679,6 @@ public class ProposalCopyServiceImpl implements ProposalCopyService {
     /**
      * Fix data related to Budget Versions.
      * @param doc the proposal development document
-     * @param oldLeadUnitNumber the old lead unit number
-     * @param newLeadUnitNumber the new lead unit number
      */
     protected void fixBudgetVersions(ProposalDevelopmentDocument doc) {
         if (doc.getBudgetDocumentVersions().size() > 0) {
@@ -804,7 +820,7 @@ public class ProposalCopyServiceImpl implements ProposalCopyService {
      */
     protected void copyAttachments(ProposalDevelopmentDocument src, ProposalDevelopmentDocument dest) throws Exception {
         
-        NarrativeService narrativeService = dest.getDevelopmentProposal().getNarrativeService();
+        LegacyNarrativeService narrativeService = dest.getDevelopmentProposal().getNarrativeService();
         ProposalPersonBiographyService propPersonBioService = dest.getDevelopmentProposal().getProposalPersonBiographyService();
  
         loadAttachmentContents(src);
@@ -888,9 +904,8 @@ public class ProposalCopyServiceImpl implements ProposalCopyService {
         Map<String,String> primaryKey = new HashMap<String,String>();
         primaryKey.put(PROPOSAL_NUMBER, narrative.getProposalNumber());
         primaryKey.put(MODULE_NUMBER, narrative.getModuleNumber()+"");
-        NarrativeAttachment attachment = (NarrativeAttachment)getBusinessObjectService().findByPrimaryKey(NarrativeAttachment.class, primaryKey);
-        narrative.getNarrativeAttachmentList().clear();
-        narrative.getNarrativeAttachmentList().add(attachment);
+        NarrativeAttachment attachment = getBusinessObjectService().findByPrimaryKey(NarrativeAttachment.class, primaryKey);
+        narrative.setNarrativeAttachment(attachment);
     }
     
     /**
@@ -903,9 +918,8 @@ public class ProposalCopyServiceImpl implements ProposalCopyService {
         primaryKey.put(PROPOSAL_NUMBER, bio.getProposalNumber());
         primaryKey.put("biographyNumber", bio.getBiographyNumber()+"");
         primaryKey.put("proposalPersonNumber", bio.getProposalPersonNumber()+"");
-        ProposalPersonBiographyAttachment attachment = (ProposalPersonBiographyAttachment)getBusinessObjectService().findByPrimaryKey(ProposalPersonBiographyAttachment.class, primaryKey);
-        bio.getPersonnelAttachmentList().clear();
-        bio.getPersonnelAttachmentList().add(attachment);
+        ProposalPersonBiographyAttachment attachment = getBusinessObjectService().findByPrimaryKey(ProposalPersonBiographyAttachment.class, primaryKey);
+        bio.setPersonnelAttachment(attachment);
     }
     
     /**

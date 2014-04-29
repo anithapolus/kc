@@ -25,17 +25,20 @@ import org.apache.struts.action.ActionMapping;
 import org.kuali.coeus.common.framework.custom.attr.CustomAttributeDocument;
 import org.kuali.coeus.common.framework.editable.PersonEditableService;
 import org.kuali.coeus.common.framework.print.AttachmentDataSource;
-import org.kuali.coeus.common.framework.sponsor.SponsorService;
+import org.kuali.coeus.propdev.impl.attachment.LegacyNarrativeService;
 import org.kuali.coeus.propdev.impl.attachment.Narrative;
 import org.kuali.coeus.common.notification.impl.service.KcNotificationService;
 import org.kuali.coeus.propdev.impl.abstrct.ProposalAbstractsService;
+import org.kuali.coeus.propdev.impl.budget.CostShareInfoDO;
 import org.kuali.coeus.propdev.impl.copy.ProposalCopyCriteria;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentService.ProposalLockingRegion;
 import org.kuali.coeus.propdev.impl.docperm.ProposalRoleTemplateService;
 import org.kuali.coeus.propdev.impl.approve.ProposalDevelopmentApproverViewDO;
 import org.kuali.coeus.propdev.impl.person.CoPiInfoDO;
+import org.kuali.coeus.propdev.impl.person.KeyPersonnelService;
 import org.kuali.coeus.propdev.impl.person.ProposalPerson;
 import org.kuali.coeus.propdev.impl.person.attachment.ProposalPersonBiographyService;
+import org.kuali.coeus.sys.api.model.KcFile;
 import org.kuali.coeus.sys.framework.controller.AuditActionHelper;
 import org.kuali.coeus.sys.framework.controller.NonCancellingRecallQuestion;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
@@ -52,20 +55,17 @@ import org.kuali.kra.budget.web.struts.action.BudgetTDCValidator;
 import org.kuali.kra.infrastructure.Constants;
 import org.kuali.kra.infrastructure.KeyConstants;
 import org.kuali.kra.krms.service.KrmsRulesExecutionService;
-import org.kuali.kra.proposaldevelopment.bo.*;
-import org.kuali.kra.proposaldevelopment.budget.bo.ProposalDevelopmentBudgetExt;
-import org.kuali.kra.proposaldevelopment.budget.service.BudgetPrintService;
-import org.kuali.kra.proposaldevelopment.budget.service.ProposalBudgetService;
-import org.kuali.kra.proposaldevelopment.hierarchy.ProposalHierarcyActionHelper;
+import org.kuali.coeus.propdev.impl.budget.ProposalDevelopmentBudgetExt;
+import org.kuali.coeus.propdev.impl.budget.print.BudgetPrintService;
+import org.kuali.coeus.propdev.impl.budget.ProposalBudgetService;
+import org.kuali.coeus.propdev.impl.hierarchy.ProposalHierarcyActionHelper;
 import org.kuali.coeus.propdev.impl.person.question.ProposalPersonQuestionnaireHelper;
-import org.kuali.kra.proposaldevelopment.service.*;
 import org.kuali.coeus.propdev.impl.print.ProposalDevelopmentPrintingService;
 import org.kuali.coeus.propdev.impl.s2s.S2sOppForms;
 import org.kuali.coeus.propdev.impl.s2s.S2sOpportunity;
 import org.kuali.coeus.propdev.impl.person.ProposalDevelopmentKeyPersonnelAction;
 import org.kuali.kra.s2s.formmapping.FormMappingInfo;
 import org.kuali.kra.s2s.formmapping.FormMappingLoader;
-import org.kuali.kra.s2s.generator.S2SGeneratorNotFoundException;
 import org.kuali.kra.s2s.service.PrintService;
 import org.kuali.kra.s2s.service.S2SService;
 import org.kuali.rice.core.api.util.RiceConstants;
@@ -114,10 +114,9 @@ public class ProposalDevelopmentAction extends BudgetParentActionBase {
     
 	private KcDocumentRejectionService kcDocumentRejectionService;
     private KrmsRulesExecutionService krmsRulesExecutionService;
-    private SponsorService sponsorService;
-   
+
 	private ProposalPersonBiographyService proposalPersonBiographyService;
-    private NarrativeService narrativeService;
+    private LegacyNarrativeService narrativeService;
     private ProposalAbstractsService  proposalAbstractsService;
     private KeyPersonnelService keyPersonnelService;
     private PersonEditableService personEditableService;
@@ -377,12 +376,6 @@ public class ProposalDevelopmentAction extends BudgetParentActionBase {
         ProposalDevelopmentDocument document = ((ProposalDevelopmentForm)kualiDocumentFormBase).getProposalDevelopmentDocument();
         getProposalDevelopmentService().loadDocument(document);
     }
-    
-    protected SponsorService getSponsorService() {
-    	if (sponsorService == null )
-        sponsorService  = KcServiceLocator.getService(SponsorService.class);
-    	return sponsorService;
-    }    
 
     @Override
     public ActionForward save(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -698,9 +691,9 @@ public class ProposalDevelopmentAction extends BudgetParentActionBase {
     	return proposalPersonBiographyService;
 	}
 
-	protected NarrativeService getNarrativeService() {
+	protected LegacyNarrativeService getNarrativeService() {
 		if (narrativeService==null)
-			narrativeService = KcServiceLocator.getService(NarrativeService.class);
+			narrativeService = KcServiceLocator.getService(LegacyNarrativeService.class);
 		return narrativeService;
 	}
 
@@ -767,8 +760,8 @@ public class ProposalDevelopmentAction extends BudgetParentActionBase {
             GlobalVariables.getMessageMap().putError("noKey", ERROR_NO_GRANTS_GOV_FORM_SELECTED);
             return mapping.findForward(Constants.PROPOSAL_ACTIONS_PAGE);
         }
-        AttachmentDataSource attachmentDataSource = getPrintService().printForm(proposalDevelopmentDocument);
-        if(attachmentDataSource==null || attachmentDataSource.getContent()==null || attachmentDataSource.getContent().length==0){
+        KcFile attachmentDataSource = getPrintService().printForm(proposalDevelopmentDocument);
+        if(attachmentDataSource==null || attachmentDataSource.getData()==null || attachmentDataSource.getData().length==0){
             //KRACOEUS-3300 - there should be GrantsGov audit errors in this case, grab them and display them as normal errors on
             //the GrantsGov forms tab so we don't need to turn on auditing
             grantsGovErrorExists = ErrorUtils.copyAuditErrorsToPage(Constants.GRANTSGOV_ERRORS, "grantsGovFormValidationErrors");
@@ -802,7 +795,7 @@ public class ProposalDevelopmentAction extends BudgetParentActionBase {
             proposalDevelopmentDocument.getDevelopmentProposal().setGrantsGovSelectFlag(false);
             return mapping.findForward(Constants.MAPPING_BASIC);
         }
-        if(attachmentDataSource==null || attachmentDataSource.getContent()==null){
+        if(attachmentDataSource==null || attachmentDataSource.getData()==null){
             return mapping.findForward(Constants.MAPPING_PROPOSAL_ACTIONS);
         }
         streamToResponse(attachmentDataSource, response);
@@ -817,13 +810,13 @@ public class ProposalDevelopmentAction extends BudgetParentActionBase {
      * @throws Exception
      */
     @Override
-    protected void streamToResponse(AttachmentDataSource attachmentDataSource, HttpServletResponse response) throws Exception {
-        byte[] xbts = attachmentDataSource.getContent();
+    protected void streamToResponse(KcFile attachmentDataSource, HttpServletResponse response) throws Exception {
+        byte[] xbts = attachmentDataSource.getData();
         ByteArrayOutputStream baos = null;
         try {
             baos = new ByteArrayOutputStream(xbts.length);
             baos.write(xbts);
-            WebUtils.saveMimeOutputStreamAsFile(response, attachmentDataSource.getContentType(), baos, attachmentDataSource.getFileName());
+            WebUtils.saveMimeOutputStreamAsFile(response, attachmentDataSource.getType(), baos, attachmentDataSource.getName());
         } finally {
             try {
                 if (baos != null) {
@@ -1160,7 +1153,7 @@ public class ProposalDevelopmentAction extends BudgetParentActionBase {
         ProposalPerson person = document.getDevelopmentProposal().getProposalPerson(personIndex);
         AttachmentDataSource dataStream =
                 getProposalDevelopmentPrintingService().printPersonCertificationQuestionnaire(Lists.newArrayList(person));
-        if (dataStream.getContent() != null) {
+        if (dataStream.getData() != null) {
             streamToResponse(dataStream, response);
             forward = null;
         }
@@ -1186,7 +1179,7 @@ public class ProposalDevelopmentAction extends BudgetParentActionBase {
         AttachmentDataSource dataStream = 
                 getProposalDevelopmentPrintingService().printPersonCertificationQuestionnaire(pdForm.getProposalDevelopmentDocument().getDevelopmentProposal().getProposalPersons());
 
-        if (dataStream.getContent() != null) {
+        if (dataStream.getData() != null) {
             streamToResponse(dataStream, response);
             forward = null;
         }
@@ -1235,14 +1228,8 @@ public class ProposalDevelopmentAction extends BudgetParentActionBase {
     
     class S2sOppFormsComparator3 implements Comparator<S2sOppForms> {
 	    public int compare(S2sOppForms s2sOppForms1, S2sOppForms s2sOppForms2) {
-	        FormMappingInfo info1 = null;
-	        FormMappingInfo info2 = null;
-	        try {
-	            info1 = new FormMappingLoader().getFormInfo(s2sOppForms1.getS2sOppFormsId().getOppNameSpace());
-	            info2 = new FormMappingLoader().getFormInfo(s2sOppForms2.getS2sOppFormsId().getOppNameSpace());
-	        }
-	        catch (S2SGeneratorNotFoundException e) {
-	        }
+	    	FormMappingInfo info1 = new FormMappingLoader().getFormInfo(s2sOppForms1.getS2sOppFormsId().getOppNameSpace()); 
+	    	FormMappingInfo info2 = new FormMappingLoader().getFormInfo(s2sOppForms2.getS2sOppFormsId().getOppNameSpace());
 	        if(info1 != null && info2 != null) {
 	            Integer sortIndex1 = info1.getSortIndex();               
 	            Integer sortIndex2 = info2.getSortIndex();  

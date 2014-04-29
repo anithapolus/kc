@@ -24,14 +24,14 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.kuali.coeus.common.framework.print.AttachmentDataSource;
 import org.kuali.coeus.common.framework.unit.Unit;
+import org.kuali.coeus.propdev.impl.core.DevelopmentProposal;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentAction;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentDocument;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentForm;
 import org.kuali.coeus.propdev.impl.print.ProposalDevelopmentPrintingService;
+import org.kuali.coeus.propdev.impl.hierarchy.ProposalHierarchyService;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.infrastructure.Constants;
-import org.kuali.kra.proposaldevelopment.bo.*;
-import org.kuali.kra.proposaldevelopment.hierarchy.service.ProposalHierarchyService;
 import org.kuali.coeus.propdev.impl.person.question.ProposalPersonQuestionnaireHelper;
 import org.kuali.coeus.propdev.impl.person.question.ProposalPersonQuestionnaireHelperComparator;
 import org.kuali.coeus.propdev.impl.person.keyperson.AddKeyPersonEvent;
@@ -756,7 +756,7 @@ public class ProposalDevelopmentKeyPersonnelAction extends ProposalDevelopmentAc
         reportParameters.put("template", header.getQuestionnaire().getTemplate());
 
         AttachmentDataSource dataStream = getQuestionnairePrintingService().printQuestionnaireAnswer(person, reportParameters);
-        if (dataStream.getContent() != null) {
+        if (dataStream.getData() != null) {
             streamToResponse(dataStream, response);
             forward = null;
         }

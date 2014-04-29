@@ -28,8 +28,8 @@ import gov.grants.apply.system.globalLibraryV20.YesNoDataType.Enum;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xmlbeans.XmlObject;
-import org.kuali.coeus.common.framework.rolodex.Rolodex;
-import org.kuali.coeus.common.framework.rolodex.RolodexService;
+import org.kuali.coeus.common.api.rolodex.RolodexContract;
+import org.kuali.coeus.common.api.rolodex.RolodexService;
 import org.kuali.coeus.propdev.impl.core.ProposalDevelopmentDocument;
 import org.kuali.coeus.propdev.impl.ynq.ProposalYnq;
 import org.kuali.coeus.sys.framework.service.KcServiceLocator;
@@ -40,7 +40,6 @@ import org.kuali.kra.questionnaire.answer.Answer;
 import org.kuali.kra.questionnaire.answer.AnswerHeader;
 import org.kuali.kra.questionnaire.answer.QuestionnaireAnswerService;
 import org.kuali.kra.s2s.generator.impl.PHS398CoverPageSupplementBaseGenerator;
-import org.kuali.kra.s2s.service.S2SBudgetCalculatorService;
 import org.kuali.kra.s2s.util.S2SConstants;
 
 import java.math.BigDecimal;
@@ -68,10 +67,8 @@ public class PHS398CoverPageSupplement_2_0_V2Generator extends
     protected static final String PROPOSAL_YNQ_QUESTION_119 = "119";
     protected static final String PROPOSAL_YNQ_QUESTION_120 = "120";
     protected static final int PROJECT_INCOME_DESCRIPTION_MAX_LENGTH = 150;
-    protected S2SBudgetCalculatorService s2sBudgetCalculatorService;
 
     List<AnswerHeader> answerHeaders;
-    private transient QuestionnaireAnswerService questionnaireAnswerService;
     private static final Log LOG = LogFactory
             .getLog(PHS398CoverPageSupplement_2_0_V2Generator.class);
     Enum ynqAnswer;
@@ -89,7 +86,6 @@ public class PHS398CoverPageSupplement_2_0_V2Generator extends
 		PHS398CoverPageSupplement20 coverPageSupplement = PHS398CoverPageSupplement20.Factory
 				.newInstance();
 		answerHeaders = getQuestionnaireAnswers(pdDoc.getDevelopmentProposal(), true);
-	    s2sBudgetCalculatorService = KcServiceLocator.getService(S2SBudgetCalculatorService.class);
 		coverPageSupplement.setFormVersion(S2SConstants.FORMVERSION_2_0);
 		coverPageSupplement.setPDPI(getPDPI());
 		coverPageSupplement.setClinicalTrial(getClinicalTrial());
@@ -132,15 +128,7 @@ public class PHS398CoverPageSupplement_2_0_V2Generator extends
 		pdpi.setPDPIName(globLibV20Generator.getHumanNameDataType(PI));
 		return pdpi;
 	}
-
-	private YesNoDataType.Enum getProposalYnQAnswer(ProposalYnq proposalYnq) {
-		return proposalYnq.getAnswer().equals(
-				S2SConstants.PROPOSAL_YNQ_ANSWER_Y) ? YesNoDataType.Y_YES
-				: YesNoDataType.N_NO;
-	}
 	
-
-
 	/**
 	 * 
 	 * This method is used to get Clinical Trial information
@@ -219,7 +207,7 @@ public class PHS398CoverPageSupplement_2_0_V2Generator extends
             coverPageSupplement.setIsChangeOfPDPI(YesNoDataType.Y_YES);
             if (explanation != null) {
                 RolodexService rolodexService = KcServiceLocator.getService(RolodexService.class);
-                Rolodex rolodex = rolodexService.getRolodex(Integer.valueOf(explanation));
+                RolodexContract rolodex = rolodexService.getRolodex(Integer.valueOf(explanation));
                 HumanNameDataType formerPDName = globLibV20Generator
                         .getHumanNameDataType(rolodex);
                 if (formerPDName != null

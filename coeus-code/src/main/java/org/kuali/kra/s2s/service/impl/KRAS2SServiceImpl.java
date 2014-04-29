@@ -40,13 +40,13 @@ import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.infrastructure.Constants;
 import org.kuali.kra.infrastructure.KeyConstants;
 import org.kuali.kra.institutionalproposal.proposaladmindetails.ProposalAdminDetails;
-import org.kuali.kra.proposaldevelopment.bo.DevelopmentProposal;
+import org.kuali.coeus.propdev.impl.core.DevelopmentProposal;
 import org.kuali.kra.s2s.S2SException;
 import org.kuali.coeus.propdev.impl.s2s.*;
+import org.kuali.coeus.propdev.api.attachment.NarrativeService;
 import org.kuali.kra.s2s.formmapping.FormMappingInfo;
 import org.kuali.kra.s2s.formmapping.FormMappingLoader;
 import org.kuali.kra.s2s.generator.S2SBaseFormGenerator;
-import org.kuali.kra.s2s.generator.S2SGeneratorNotFoundException;
 import org.kuali.kra.s2s.generator.bo.AttachmentData;
 import org.kuali.kra.s2s.service.*;
 import org.kuali.kra.s2s.util.AuditError;
@@ -84,6 +84,8 @@ public class KRAS2SServiceImpl implements S2SService {
 	private S2SUtilService s2SUtilService;
 	private S2SValidatorService s2SValidatorService;
 	private ConfigurationService configurationService;
+    private NarrativeService narrativeService;
+	private S2SUserAttachedFormService s2SUserAttachedFormService;
 	private static final String GRANTS_GOV_STATUS_ERROR = "ERROR";
 	private static final String KEY_PROPOSAL_NUMBER = "proposalNumber";
 
@@ -134,7 +136,7 @@ public class KRAS2SServiceImpl implements S2SService {
 	public List<S2sOppForms> parseOpportunityForms(S2sOpportunity opportunity) throws S2SException{
         String opportunityContent = getOpportunityContent(opportunity.getSchemaUrl());
         opportunity.setOpportunity(opportunityContent);
-		return new OpportunitySchemaParser().getForms(opportunity.getSchemaUrl());
+		return new OpportunitySchemaParser().getForms(opportunity.getProposalNumber(),opportunity.getSchemaUrl());
 	}
     private String getOpportunityContent(String schemaUrl) throws S2SException{
         String opportunity = "";
@@ -635,23 +637,23 @@ public class KRAS2SServiceImpl implements S2SService {
 		if (attList == null) {
 		    attList = new ArrayList<AttachmentData>();
 		}
-	    getS2sUtilService().deleteSystemGeneratedAttachments(pdDoc);
+	    getNarrativeService().deleteSystemGeneratedNarratives(pdDoc.getDevelopmentProposal().getNarratives());
 		for (S2sOppForms opportunityForm : opportunityForms) {
 			if (!opportunityForm.getInclude()) {
 				continue;
 			}
 			List<AttachmentData> formAttList = new ArrayList<AttachmentData>();
-			FormMappingInfo info = null;
 			S2SBaseFormGenerator s2sFormGenerator = null;
 			try {
-				info = new FormMappingLoader().getFormInfo(opportunityForm.getS2sOppFormsId().getOppNameSpace());
-				s2sFormGenerator = (S2SBaseFormGenerator)s2SFormGeneratorService.getS2SGenerator(info.getNameSpace());
-			} catch (S2SGeneratorNotFoundException e) {
+				FormMappingInfo info = new FormMappingLoader().getFormInfo(opportunityForm.getS2sOppFormsId().getOppNameSpace());
+				s2sFormGenerator = (S2SBaseFormGenerator)s2SFormGeneratorService.getS2SGenerator(developmentProposal.getProposalNumber(),info.getNameSpace());
+			    s2sFormGenerator.setAuditErrors(auditErrors);
+			    s2sFormGenerator.setAttachments(formAttList);
+			    s2sFormGenerator.setNamespace(info.getNameSpace());
+			} catch (S2SException e) {
 				continue;
 			}
 			try {
-			    s2sFormGenerator.setAuditErrors(auditErrors);
-			    s2sFormGenerator.setAttachments(formAttList);
 				XmlObject formObject = s2sFormGenerator.getFormObject(pdDoc);
 				if (s2SValidatorService.validate(formObject, auditErrors)) {
 					if (forms != null && attList != null) {
@@ -925,5 +927,30 @@ public class KRAS2SServiceImpl implements S2SService {
 
     public void setConfigurationService(ConfigurationService configurationService) {
         this.configurationService = configurationService;
+    }
+
+    public NarrativeService getNarrativeService() {
+        return narrativeService;
+    }
+
+    public void setNarrativeService(NarrativeService narrativeService) {
+        this.narrativeService = narrativeService;
+    }
+
+
+    /**
+     * Gets the s2SUserAttachedFormService attribute. 
+     * @return Returns the s2SUserAttachedFormService.
+     */
+    public S2SUserAttachedFormService getS2SUserAttachedFormService() {
+        return s2SUserAttachedFormService;
+    }
+
+    /**
+     * Sets the s2SUserAttachedFormService attribute value.
+     * @param s2sUserAttachedFormService The s2SUserAttachedFormService to set.
+     */
+    public void setS2SUserAttachedFormService(S2SUserAttachedFormService s2sUserAttachedFormService) {
+        s2SUserAttachedFormService = s2sUserAttachedFormService;
     }
 }

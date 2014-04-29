@@ -17,8 +17,10 @@ package org.kuali.kra.s2s.formmapping;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.kuali.kra.s2s.generator.S2SGeneratorNotFoundException;
+import org.kuali.coeus.propdev.impl.s2s.S2sUserAttachedForm;
+import org.kuali.coeus.sys.framework.service.KcServiceLocator;
 import org.kuali.kra.s2s.util.S2SConstants;
+import org.kuali.rice.krad.service.BusinessObjectService;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -49,31 +51,63 @@ public class FormMappingLoader {
     private static final String NAMESPACE = "namespace";
     private static final String MAIN_CLASS = "mainClass";
     private static final String STYLE_SHEET = "stylesheet";
-    private static final String PKG_NAME = "pkgName";
     private static final String FORM_NAME = "formName";
     private static final String TAG_FORM = "Form";
     private static final String SORT_INDEX = "sortIndex";
     private static final int DEFAULT_SORT_INDEX = 1000;
     private static final Log LOG = LogFactory.getLog(FormMappingLoader.class);
 
+    
     /**
      * 
      * This method is used to get the Form Information based on the given schema
      * 
-     * @param nameSpace {@link String} namespace URL of the form
+     * @param namespace {@link String} namespace URL of the form
      * @return {@link FormMappingInfo}containing the namespace information
-     * @throws S2SGeneratorNotFoundException
+     * @throws org.kuali.kra.s2s.S2SException
      * 
      */
-    public FormMappingInfo getFormInfo(String nameSpace) throws S2SGeneratorNotFoundException {
+    public FormMappingInfo getFormInfo(String namespace) {
+        return getFormInfo(null,namespace);
+    }
+    
+    public FormMappingInfo getFormInfo(String proposalNumber,String namespace) {
         getBindings();
-        FormMappingInfo formMappingInfo = bindings.get(nameSpace);
+        FormMappingInfo formMappingInfo = bindings.get(namespace);
         if (formMappingInfo != null) {
             return formMappingInfo;
+        }else if(proposalNumber!=null){
+            return getUserAttachedForm(proposalNumber,namespace);
+        }else{
+            return null;
         }
-        else {
-            throw new S2SGeneratorNotFoundException("Form not found");
-        }
+    }
+
+    private FormMappingInfo getUserAttachedForm(String proposalNumber,String namespace) {
+        Map<String, Object> fieldMap = new HashMap<String, Object>();
+        fieldMap.put("proposalNumber", proposalNumber);
+        fieldMap.put("namespace", namespace);
+        List<S2sUserAttachedForm> formList = (List<S2sUserAttachedForm>) KcServiceLocator.getService(BusinessObjectService.class).
+                                                    findMatching(S2sUserAttachedForm.class,fieldMap);
+        if(!formList.isEmpty()){
+            S2sUserAttachedForm userAttachedForm=formList.get(0);
+            FormMappingInfo mappingInfo = new FormMappingInfo();
+            mappingInfo.setFormName(userAttachedForm.getFormName());
+            mappingInfo.setMainClass("org.kuali.kra.s2s.generator.impl.UserAttachedFormGenerator");
+            mappingInfo.setNameSpace(namespace);
+            mappingInfo.setSortIndex(999);
+            mappingInfo.setStyleSheet(createStylesheetName(namespace));
+            mappingInfo.setUserAttachedForm(true);
+            return mappingInfo;
+        }else return null;
+        
+    }
+
+    private String createStylesheetName(String namespace) {
+        String[] tokens = namespace.split("/");
+        String formname = tokens[tokens.length-1];
+        String templateName = "org/kuali/kra/s2s/stylesheet/"+formname+".xsl";
+        return templateName;
     }
 
     /**
@@ -133,8 +167,8 @@ public class FormMappingLoader {
             formInfo.setNameSpace(formNode.getAttribute(NAMESPACE).trim());
             formInfo.setFormName(formNode.getElementsByTagName(FORM_NAME).item(0).getTextContent().trim());
             formInfo.setMainClass(formNode.getElementsByTagName(MAIN_CLASS).item(0).getTextContent().trim());
+            formInfo.setUserAttachedForm(false);
             formInfo.setStyleSheet(formNode.getElementsByTagName(STYLE_SHEET).item(0).getTextContent().trim());
-            formInfo.setPkgName(formNode.getElementsByTagName(PKG_NAME).item(0).getTextContent().trim());
 
             NodeList sortIndexNodesList = formNode.getElementsByTagName(SORT_INDEX);
             if (sortIndexNodesList.getLength() > 0) {
@@ -168,4 +202,5 @@ public class FormMappingLoader {
     public Map<Integer, List<String>> getSortedNameSpaces() {
         return sortedNameSpaces;
     }
+
 }

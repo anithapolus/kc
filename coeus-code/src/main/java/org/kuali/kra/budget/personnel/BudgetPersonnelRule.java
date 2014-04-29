@@ -26,7 +26,7 @@ import org.kuali.kra.budget.nonpersonnel.BudgetLineItem;
 import org.kuali.kra.budget.parameters.BudgetPeriod;
 import org.kuali.kra.infrastructure.Constants;
 import org.kuali.kra.infrastructure.KeyConstants;
-import org.kuali.kra.proposaldevelopment.bo.DevelopmentProposal;
+import org.kuali.coeus.propdev.impl.core.DevelopmentProposal;
 import org.kuali.rice.core.api.util.RiceKeyConstants;
 import org.kuali.rice.coreservice.framework.parameter.ParameterService;
 import org.kuali.rice.krad.service.BusinessObjectService;
@@ -51,7 +51,7 @@ public class BudgetPersonnelRule {
     
     /**
      * Creates a new BudgetPersonnelRule setting the required services using the
-     * {@link org.kuali.coeus.sys.framework.service.KcServiceLocator KraServiceLocator}.
+     * {@link org.kuali.coeus.sys.framework.service.KcServiceLocator KcServiceLocator}.
      */
     public BudgetPersonnelRule() {
         this(KcServiceLocator.getService(BusinessObjectService.class),

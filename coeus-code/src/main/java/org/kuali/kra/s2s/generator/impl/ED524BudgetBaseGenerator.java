@@ -23,7 +23,7 @@ import org.kuali.kra.budget.nonpersonnel.BudgetLineItemCalculatedAmount;
 import org.kuali.kra.budget.parameters.BudgetPeriod;
 import org.kuali.kra.budget.personnel.BudgetPersonnelCalculatedAmount;
 import org.kuali.kra.budget.personnel.BudgetPersonnelDetails;
-import org.kuali.kra.proposaldevelopment.budget.service.ProposalBudgetService;
+import org.kuali.coeus.propdev.impl.budget.ProposalBudgetService;
 import org.kuali.coeus.budget.api.category.BudgetCategoryMapContract;
 import org.kuali.coeus.budget.api.category.BudgetCategoryMappingContract;
 import org.kuali.kra.s2s.generator.S2SBaseFormGenerator;
@@ -86,7 +86,6 @@ public abstract class ED524BudgetBaseGenerator extends S2SBaseFormGenerator {
     protected ScaleTwoDecimal personnelCostCS = ScaleTwoDecimal.ZERO;
 
     protected static final String DHHS_AGREEMENT = "DHHS_AGREEMENT";
-    protected static final String DHHS_DEFAULT_VALUE = "0";
     protected static final String AGENCY_VALUE = "DHHS";
     protected static final String RESTIRCTED_QUESTION = " ";
     protected static final String DEFAULT_LEGAL_NAME = "NONE";
