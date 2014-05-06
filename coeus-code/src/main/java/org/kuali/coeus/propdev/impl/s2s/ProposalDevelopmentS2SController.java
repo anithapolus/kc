@@ -48,7 +48,7 @@ public class ProposalDevelopmentS2SController extends ProposalDevelopmentControl
 	@Qualifier("s2SService")
 	private S2SService s2SService;
 	
-	protected S2SService getS2SService() {
+	public S2SService getS2SService() {
 		return s2SService;
 	}
 
